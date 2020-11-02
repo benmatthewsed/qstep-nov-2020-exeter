@@ -1,0 +1,339 @@
+---
+title: "Q-Step presentation"
+author: "Ben Matthews"
+date: "2020-11-11"
+output: 
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+    seal: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, 
+                      message = FALSE,
+                      error = TRUE,
+                      fig.asp = 0.618,
+                      dev.args = list(png = list(type = "cairo")))
+
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_solarized_light()
+
+```
+
+name: title
+class: center, middle, inverse, my-one-page-font
+
+<style type="text/css">
+.remark-slide-content {
+    font-size: 25px;
+    padding: 1em 4em 1em 4em;
+}
+.my-one-page-font {
+  font-size: 20px;
+}
+</style>    
+
+
+# Understanding the relationships between risk factors, intersectional identities and criminal career trajectories: A multilevel approach
+
+Ben Matthews<sup>1</sup>, Susan McVie<sup>1</sup>, Carleen Thompson<sup>2</sup> and Anna Stewart<sup>2</sup>
+
+Q-Step Exeter, 2020-11-11
+
+<sup>1</sup>University of Edinburgh
+<sup>2</sup>Griffith University
+
+.pull-left[
+`r knitr::include_graphics("https://www.understanding-inequalities.ac.uk/sites/all/themes/theme935/logo.png")`
+]
+
+.pull-right[
+```{r esrc, out.width = '60%', echo = FALSE}
+knitr::include_graphics("https://esrc.ukri.org/esrc/includes/themes/MasterSite/images/logo-1.png")
+```
+]
+
+---
+
+# Overview
+
+1. Conceptual background: quantitative intersectionality
+2. Methodology: Multilevel models for quantitative intersectionality
+3. Our study: Exploring inequalities in the impact of childhood system contact on adult criminal conviction trajectories by sex and Indigenous status
+
+---
+class: center, middle, inverse
+
+# Conceptual background: Quantiative intersectionality
+
+
+---
+
+# What is intersectionality?
+
+// need to clear this up
+
+- It varies!
+- Lesley McCall (2005) talks about three kinds of intersectional "complexity":
+  - Anticategorical - "deconstructs analytical categories"
+  - Intracategorical - "focus on particular social groups at neglected points of intersection... in order to reveal the complexity of lived experience"
+  - Intercategorical - "provisionally adopt existing analytical categories to document relationships of inequality among social groups and changing configurations of inequality"
+- Each of these archetypal approaches has its own typical set of methods. Quantitative studies of intersectionality are typically doing intercategorical research
+
+
+
+
+---
+# Quantiative intersectionality
+
+- Has two main components:
+  1. Fits (often quite complicated) models with _interactions_ between the effects of different independent variables (so, social characteristics) and the outcome
+  2. Wants to avoid essentializing social groups by focusing on _variation_ in outcomes rather than just average outcomes _for people with the same observable characteristics_
+- Problem: Too many interactions ruin your model
+- Problem: What does variation in the outcome mean for non-linear outcomes?
+- Problem: focusing on complexity makes it hard to summarise your analysis in the shape of a journal article (McCall, 2005)
+  
+// more on the essentialising here - maybe say in the linear case it's different?
+
+---
+class: center, middle, inverse, my-one-page-font
+
+# Intersectionality, interactions
+
+---
+
+# Problems with interactions
+- Why do we need a fancy multilevel model for this?
+- Adding too many interaction effects in a standard regression model creates problems because of the 'curse of dimensionality'
+- Every extra variable in the interaction splits the sample up further and further, making estimates unreliable and potentially giving massive standard errors!
+- In McElreath's terminology, this is because every time the model meets a new combination of variables it 'forgets' about the last combination of variables
+
+
+---
+# Bias and variance
+- This feeds into a big topic in statistics: trading off bias and variance
+- We want to make our model actually fit the data in our data _worse_ (i.e. add bias) by making it less sensitive to extreme values when there isn't a lot of data to support them
+- We want the model to find interactions _if there's enough data to support them_, but if there isn't enough data for a combination of variables we want the model to be _skeptical_ about estimating a huge interaction effects
+
+---
+# Why a "multilevel" approach?
+- Using multilevel models lets us be a bit more skeptical about large effects for parameters when there isn't a lot of data to support them
+- Multilevel models do this by 'pooling' information/'borrowing strength'/'shrinking' across clusters (in this case, across combinations of independent variables - i.e., interactions), and figuring out how much information should be pooled based on the data itself
+- This is because the model assumes that clusters are drawn from a Normal distribution, making it skeptical of extreme values
+- Specifically, Multilevel models figure out how much shrinkage to perform based on the data itself (Bell et al. 2019)
+- Clarke says: "Data nuances will determine the relative amount of ‘strength borrowed’, but in general, [multilevel] models provide a good way for the data to speak for itself when it should, and reflect an ‘average’ when there is little information."
+- People like ICC as a measure for how much 'intersectinality' there is in the model
+
+---
+# What shrinkage looks like
+
+.left-column[
+From [Michael Clark's excellent blog post](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models)
+]
+
+.right-column[
+```{r shrink1, out.width = '80%', echo = FALSE}
+knitr::include_graphics("https://m-clark.github.io/img/shrinkage/baseline.gif")
+
+```
+]
+
+---
+# What shrinkage looks like
+
+.left-column[
+Here the data are unbalanced, so we have more people in some groups than others; estimates from the smaller groups get shrunk more towards the average effect
+
+]
+
+
+.right-column[
+
+```{r shrink4, out.width = '80%', echo = FALSE}
+knitr::include_graphics("https://m-clark.github.io/img/shrinkage/unbalanced.gif")
+
+```
+]
+
+
+
+---
+class: center, middle, inverse, my-one-page-font
+
+# _Interlude_: terminology
+
+
+---
+# Terminology
+- Terminology about "multilevel" models is a mess! The maths is the same (!), but easier to think of this as 'partial pooling' or 'adaptive regularization' (McElreath 2016)
+- There are also other methods of doing this regularization: 
+  - Penalized regression
+  - 'Skeptical priors' in a Bayesian model (Harrell)
+- Debate in the literature about the best way, but multilevel models are recommended by [LIST]
+- Okay we're really getting technical here but I __think__ there's also a difference here in how you'd understand what a multilevel model _is_ between Frequentist and Bayesian senses - TLDR is that a Frequentist approach treats the 'levels' as part of the error term in the model (and so ["integrates them out of the likelihood"](https://discourse.mc-stan.org/t/hierarchical-linear-models-bayes-vs-frequentist/12012/2)) whereas for Bayes these extra levels are (hyper-?)parameters that you estimate directly
+- The upshot is that you only get uncertainty estimates for all your interaction terms in the mulitilevel specification with Bayes
+
+
+
+---
+# Non-linear outcomes
+
+- What about the variation in the outcome?
+- Don't use the estimated parameters from the regression model (McElreath 2019)
+- Use Average Predictive Comparisons (Gelman and Pardoe 2007)
+- Specifically, in our case we used Marginal Effects at Representative values (MERs)
+- Decide what combinations of independent variables we're interested in, use the model to estimate outcomes for people with that combination of independent variables
+- These predictions incorporate the effects of all our interactions - that is, the levels of our 'multilevel' model
+- NB some types of predictive comparisons, particularly Average Marginal Effects, can get confusing here! To create a counterfactual you might be making predictions for combinations of independent variables you haven't observed in your dataset. Need to think carefully about what 'level' of the random effect to give this counterfactual (default is to average over effects of all interactions)
+- NB MERs don't tell us how _common_ these combinations are!
+
+---
+# In review
+- We want to fit a model with lots of interactions and which helps us understand variation in our outcome between people with the same observables
+- We can do this by fitting our interactions as a level in a multilevel model and by interpreting the model through average predictive comparisons
+
+---
+
+# Research background
+1. How do __childhood experiences__ affect __adult convictions__ histories?
+2. Key insight one: childhood experiences affect adult convictions __cumulatively__. Our focus is on 'Crossover children' [(Baidawi, 2020:280)](https://www.tandfonline.com/doi/full/10.1080/0312407X.2019.1686765) who are involved with both youth justice __and__ child projection
+3. Key insight two: the ways in which childhood experiences shape adult outcomes may __vary by both sex and race/ethnicity__ [(Broidy et al. 2015:145)](https://link.springer.com/article/10.1007/s40865-015-0008-z)
+
+---
+# Research question
+- How do the __cumulative__ effects of youth justice and child welfare contact on adult convictions trajectories __vary by sex and race/ethnicity__?
+
+---
+# Data
+- Comes from __Queensland Cross-sector Research Collaboration__ (QCRC)
+- __Linked data sources__ from different administrative departments in Queensland, Australia:
+  - Youth justice
+  - Adult justice
+  - Child protection
+  - Birth register 
+  - Marriages
+- Cohorts registered born in Queensland in 1983 and 1984, followed to age 29
+
+---
+class: my-one-page-font
+
+# Measures
+```{r, echo = FALSE}
+library(dplyr)
+tibble::tribble(
+              ~Variable,            ~Level,  ~Count, ~Proportion,
+      "Adult conviction",      "Convicted",  16802, 20.2,
+                      "",  "Not convicted",  66569, 79.8,
+     "Indigenous Status (IS) ","Indigenous (ever)",   4821, 0.06,
+                      "", "Non-Indigenous",  78541, 0.94,
+                   "Sex",         "Female",  40416, 0.48,
+                      "",           "Male",  42946, 0.52,
+      "Police Diversion",              "1",   9264, 0.11,
+         "Abuse/Neglect",              "1",   3515, 0.04,
+  "Youth Justice Charge",              "1",   3306, 0.04,
+        "OOHC Placement",              "1",    784, 0.01,
+       "Youth Detention",              "1",    469, 0.01,
+                 "Total",               "",  83371,    1
+  ) %>% kableExtra::kable("html")
+```
+
+
+---
+# Methods 
+Three steps:
+
+1. Make __convictions trajectory groups__ with Latent Class Growth Curves [(Nagin and Land 1993)](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1745-9125.1993.tb01133.x)
+2. Fit "intersectional" [(Bell et al. 2019)](https://psycnet.apa.org/fulltext/2019-30571-005.html) multinomial logistic regression model to __estimate associations__ between youth justice and child welfare __system contact and adult convictions class__
+3. Interpret model results through __estimated probability of convictions class membersip__, conditional different configurations of our independent variables (i.e. Average Predictive Comparisons, [Gelman and Pardoe 2007](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1467-9531.2007.00181.x))
+
+
+---
+name: results
+class: center, middle, inverse
+
+# Results
+---
+
+# Estimated conviction trajectories
+```{r y18_trajectories, out.width = '78%', echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/y18_trajectories.png")
+```
+
+
+---
+
+# Conviction trajectory probabilities
+
+```{r mers_comp, out.width = '78%', echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/esc_plot.png")
+```
+
+
+---
+
+# Discussion
+- Childhood experiences' relationships with the probability of adult convictions trajectories __do seem to differ by sex and Indigenous status__:
+   - Non-IS men and women have the largest decrease in probability of no/low class membership in presence of all childhood contacts
+   - In contrast IS men have the smallest decrease in probability of no/low class membership in presence of all childhood contacts
+- This is partly because of __'floor effects'__
+- … but the __cumulative effect__ of these risk factors leads to __similar outcomes by sex`*`IS__, despite the very __different baselines__ by sex and IS
+
+---
+# Concluding thoughts
+- This is a first step: from this model we can derive __other quantities of interest__
+   - Look at __other__ combinations of __childhood factors__
+   - Expand comparisons across __different developmental trajectories__
+- What does IS measure here? Must __avoid deficit interpretation__ [(Walter and Andersen 2013)](https://www.taylorfrancis.com/books/e/9781315426570)
+
+---
+name: thanks
+class: center, middle, inverse, my-one-page-font
+
+# Thank you!
+
+Thank you to Heidi Perrett at Griffith University for facilitating data access
+
+
+Ben Matthews<sup>1</sup>, Susan McVie<sup>1</sup>, Carleen Thompson<sup>2</sup> and Anna Stewart<sup>2</sup>
+
+
+European Society of Criminology, 2020-09-11
+
+
+<sup>1</sup>University of Edinburgh
+<sup>2</sup>Griffith University
+
+
+
+.pull-left[
+`r knitr::include_graphics("https://www.understanding-inequalities.ac.uk/sites/all/themes/theme935/logo.png")`
+]
+
+.pull-right[
+```{r esrc2, out.width = '60%', echo = FALSE}
+knitr::include_graphics("https://esrc.ukri.org/esrc/includes/themes/MasterSite/images/logo-1.png")
+```
+]
+
+`@benmatthewsed` | `@U_Inequalities`
+
+---
+name: bonus
+class: center, middle, inverse
+
+# Bonus slides
+
+
+---
+# Prevalence of independent variables by sex and IS
+```{r proportions, out.width = '50%', echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/iv_proportions.png")
+```
