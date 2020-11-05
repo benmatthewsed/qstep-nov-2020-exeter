@@ -78,15 +78,18 @@ class: center, middle, inverse
 ---
 
 # What is intersectionality?
+- Coined by Kimberlé Crenshaw, the [Wikipedia](https://en.wikipedia.org/wiki/Intersectionality) (therefore correct) definition is: "a theoretical framework for understanding how aspects of a person's social and political identities... combine to create different modes of discrimination and privilege. Intersectionality identifies advantages and disadvantages that are felt by people due to a combination of factors."
+- (As we're in 2020 exactly what "intersectionality" _means_ is [also part of the culture wars](https://www.vox.com/the-highlight/2019/5/20/18542843/intersectionality-conservatism-law-race-gender-discrimination)...)
 
-// need to clear this up
+---
 
-- It varies!
-- Lesley McCall (2005) talks about three kinds of intersectional "complexity":
+# What is intersectionality?
+- Analytically, "intersectionality" covers researchers in different theoretical traditions and with different research methods
+- Lesley McCall (2005) talks about three broad kinds of intersectional "complexity":
   - Anticategorical - "deconstructs analytical categories"
   - Intracategorical - "focus on particular social groups at neglected points of intersection... in order to reveal the complexity of lived experience"
   - Intercategorical - "provisionally adopt existing analytical categories to document relationships of inequality among social groups and changing configurations of inequality"
-- Each of these archetypal approaches has its own typical set of methods. Quantitative studies of intersectionality are typically doing intercategorical research
+- Each of these archetypal approaches has its own typical set of methods. Quantitative studies of intersectionality are typically doing __intercategorical__ research
 
 
 
@@ -94,14 +97,12 @@ class: center, middle, inverse
 ---
 # Quantiative intersectionality
 
-- Has two main components:
+- (NB this is a partial introduction - my route in was through epidemiology, though McCall herself is a sociologist and political scientist)
+- So far as I can tell, quantitative intersectionality two main methodological components:
   1. Fits (often quite complicated) models with _interactions_ between the effects of different independent variables (so, social characteristics) and the outcome
-  2. Wants to avoid essentializing social groups by focusing on _variation_ in outcomes rather than just average outcomes _for people with the same observable characteristics_
-- Problem: Too many interactions ruin your model
-- Problem: What does variation in the outcome mean for non-linear outcomes?
-- Problem: focusing on complexity makes it hard to summarise your analysis in the shape of a journal article (McCall, 2005)
-  
-// more on the essentialising here - maybe say in the linear case it's different?
+  2. Wants to avoid essentializing social groups by accounting for _variation_ in outcomes rather than just average outcomes _for people with the same observable characteristics_
+- Juan Merlo calls this combination "Multilevel Analysis of Individual Heterogeneity and Discriminatory Accuracy" (MAIHDA)
+
 
 ---
 class: center, middle, inverse, my-one-page-font
@@ -111,32 +112,149 @@ class: center, middle, inverse, my-one-page-font
 ---
 
 # Problems with interactions
+- In the MAIHDA approach we want to fit interactions between __all__ our independent variables
 - Why do we need a fancy multilevel model for this?
-- Adding too many interaction effects in a standard regression model creates problems because of the 'curse of dimensionality'
-- Every extra variable in the interaction splits the sample up further and further, making estimates unreliable and potentially giving massive standard errors!
-- In McElreath's terminology, this is because every time the model meets a new combination of variables it 'forgets' about the last combination of variables
+- Adding too many interaction effects in a standard regression model creates problems because of the __'curse of dimensionality'__
+- Every extra (categorical) variable in the interaction splits the sample up further and further, making estimates unreliable as interactions for many combinations of variables are based on increasingly small amounts of data
+
+---
+# Curse of dimensionality
+
+.pull-left[
+```{r set-up, fig.show = 'hide'}
+library(tidyverse)
+
+set.seed(
+  nchar("curse of dimensionality") ^ 4
+  )
+
+n <- 80000
+
+```
+]
+
+
+.pull-right[
+```{r ref.label = 'set-up', echo = FALSE, fig.retina = 1.25}
+```
+]
 
 
 ---
-# Bias and variance
-- This feeds into a big topic in statistics: trading off bias and variance
-- We want to make our model actually fit the data in our data _worse_ (i.e. add bias) by making it less sensitive to extreme values when there isn't a lot of data to support them
-- We want the model to find interactions _if there's enough data to support them_, but if there isn't enough data for a combination of variables we want the model to be _skeptical_ about estimating a huge interaction effects
+# Curse of dimensionality
+
+```{r make-data, fig.show = 'hide'}
+df <- 
+tibble(
+  gender = sample(c("female", "male"), # we don't have data for nonbinary
+                  size = n,
+                  replace = TRUE,
+                  prob = c(0.49, 0.49)),
+  Indigenous_status = sample(c("IS", "non-IS"),
+              size = n,
+              replace = TRUE,
+              prob = c(0.04, 0.96)),
+  child_welfare = sample(c("CW contact", "no CW contact"),
+              size = n,
+              replace = TRUE,
+              prob = c(0.15, 0.80)),
+  youth_justice = sample(c("YJ contact", "no YJ contact"),
+              size = n,
+              replace = TRUE,
+              prob = c(0.15, 0.80)),
+  convicted = sample(c(1, 0),
+               size = n,
+               replace = TRUE,
+               prob = c(0.2, 0.8)),
+)
+
+```
 
 ---
-# Why a "multilevel" approach?
-- Using multilevel models lets us be a bit more skeptical about large effects for parameters when there isn't a lot of data to support them
-- Multilevel models do this by 'pooling' information/'borrowing strength'/'shrinking' across clusters (in this case, across combinations of independent variables - i.e., interactions), and figuring out how much information should be pooled based on the data itself
-- This is because the model assumes that clusters are drawn from a Normal distribution, making it skeptical of extreme values
-- Specifically, Multilevel models figure out how much shrinkage to perform based on the data itself (Bell et al. 2019)
-- Clarke says: "Data nuances will determine the relative amount of ‘strength borrowed’, but in general, [multilevel] models provide a good way for the data to speak for itself when it should, and reflect an ‘average’ when there is little information."
-- People like ICC as a measure for how much 'intersectinality' there is in the model
+# Curse of dimensionality
+
+.left-column[
+```{r some_data, fig.show = 'hide', results='hide'}
+df %>% 
+  count(
+    gender, 
+    Indigenous_status, 
+    convicted) %>% 
+  arrange(n)
+```
+]
+
+.right-column[
+```{r ref.label='some_data', echo = FALSE}
+```
+]
+
+
+
+---
+# Curse of dimensionality
+
+.left-column[
+```{r some_data2, fig.show = 'hide', results='hide'}
+df %>% 
+  count(
+    gender, 
+    Indigenous_status, 
+    child_welfare,
+    convicted) %>% 
+  arrange(n)
+```
+]
+
+.right-column[
+```{r ref.label='some_data2', echo = FALSE}
+```
+]
+
+---
+# Curse of dimensionality
+
+.left-column[
+```{r some_data3, fig.show = 'hide', results='hide'}
+df %>% 
+  count(
+    gender, 
+    Indigenous_status, 
+    child_welfare,
+    youth_justice,
+    convicted) %>% 
+  arrange(n)
+```
+]
+
+.right-column[
+```{r ref.label='some_data3', echo = FALSE}
+```
+]
+
+---
+
+# Interactions, bias and variance
+- So how to resolve this?
+- Conceptually, we want the model to find interactions __if there's enough data to support them__, but if there isn't enough data for a given combination of variables we want the model to be __sceptical__ about estimating a huge interaction effects and move its estimate towards zero
+- In the stats lingo, we're trading off [bias for variance](https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff)
+- We want to make our model actually fit the data in our dataset __worse__ (i.e. add bias) by making it __less sensitive to extreme values__ of these interaction effects when there isn't a lot of data to support them
+- (Yes, making the model fit your data worse is __very unintuitive__/sounds completely bonkers. I looked for a simple explainer online and there wasn't one I could find. [Andrew Gelman describes it like this](https://statmodeling.stat.columbia.edu/2011/10/15/the-bias-variance-tradeoff/): "The basic idea is as follows: if you’re estimating something, you can slice your data finer and finer... each time getting a purer—and less biased—estimate. But each subdivision... reduces your sample size... hence the variance of your estimate goes up.")
+
+
+---
+# Why a "multilevel" approach? Shrinkage
+- __Multilevel models__ are one way to let us be a bit __sceptical__ of extreme large effects for parameters when there isn't a lot of data
+- They do this by __'pooling' information__/'borrowing strength'/'shrinking' estimates across clusters
+- Often these clusters are schools or hospitals or courts, in this case our clusters are combinations of independent variables (i.e. our interactions)
+- This is because in the multilevel model assumes that clusters are __drawn from a Normal distribution__, making it sceptical of extreme values
+- Importantly for us, the model figures out how much information should be pooled __based on the data itself__: as [Michael Clark says](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models): "Data nuances will determine the relative amount of ‘strength borrowed’, but in general, [multilevel] models provide a good way for the __data to speak for itself when it should, and reflect an ‘average’ when there is little information__."
 
 ---
 # What shrinkage looks like
 
 .left-column[
-From [Michael Clark's excellent blog post](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models)
+From [Michael Clark's excellent blog post](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models) on shrinkage: estimates from individual clusters get 'shrunk' towards the global mean
 ]
 
 .right-column[
@@ -148,12 +266,9 @@ knitr::include_graphics("https://m-clark.github.io/img/shrinkage/baseline.gif")
 
 ---
 # What shrinkage looks like
-
 .left-column[
-Here the data are unbalanced, so we have more people in some groups than others; estimates from the smaller groups get shrunk more towards the average effect
-
+Here the data are unbalanced, so we have more people in some groups than others; estimates from the smaller groups get shrunk more towards the average effect.
 ]
-
 
 .right-column[
 
@@ -163,23 +278,26 @@ knitr::include_graphics("https://m-clark.github.io/img/shrinkage/unbalanced.gif"
 ```
 ]
 
+---
+# Why a "multilevel" approach? Other factors
+- People like Intra-class Correlation Coefficient as a measure for how much 'intersectionality' there is in the model
+- ... but you don't have to use a multilevel model though! There are also other methods of doing this regularization: 
+  - Penalized regression (see discussion between [Lizotte and colleagues (2020)](https://www.sciencedirect.com/science/article/pii/S0277953619304939) and [Evans et al. (2020)](https://www.sciencedirect.com/science/article/pii/S0277953619304927#bib14))
+  - ['Sceptical priors' in a Bayesian model](https://www.fharrell.com/post/journey/)
+- This is me speculating, but in general people in the social sciences who are doing this kind of work are pretty familiar with multilevel models (at least, more so than some of the other approaches?), and you can fit them with reasonably standard software which makes it more approachable
+  
+---
+# Technical interlude
+- Okay we're really getting technical here but I __think__ there's also a difference here in how you'd understand what a multilevel model _is_ between Frequentist and Bayesian senses - the TLDR is that a Frequentist approach treats the 'levels' in a multilevel model as part of the model's error term (and so ["integrates them out of the likelihood"](https://discourse.mc-stan.org/t/hierarchical-linear-models-bayes-vs-frequentist/12012/2)) - and the error term is by definition what you're _not_ modelling. 
+- Whereas for Bayes these extra levels are (hyper-?)parameters that you estimate directly
+- The upshot is that you only get uncertainty estimates for all your interaction terms in the multilevel specification with Bayes, and so this is the recommended approach
+- I fit these models in `R` using  the `{brms}` package. There's a very involved __worked example__ [here](https://gist.github.com/benmatthewsed/a8136944dc31fcc26d2f2e433edaab6d). Others who have adopted this approach have used MLWiN which you can call through Stata
 
 
 ---
-class: center, middle, inverse, my-one-page-font
+class: center, middle, inverse
 
-# _Interlude_: terminology
-
-
----
-# Terminology
-- Terminology about "multilevel" models is a mess! The maths is the same (!), but easier to think of this as 'partial pooling' or 'adaptive regularization' (McElreath 2016)
-- There are also other methods of doing this regularization: 
-  - Penalized regression
-  - 'Skeptical priors' in a Bayesian model (Harrell)
-- Debate in the literature about the best way, but multilevel models are recommended by [LIST]
-- Okay we're really getting technical here but I __think__ there's also a difference here in how you'd understand what a multilevel model _is_ between Frequentist and Bayesian senses - TLDR is that a Frequentist approach treats the 'levels' as part of the error term in the model (and so ["integrates them out of the likelihood"](https://discourse.mc-stan.org/t/hierarchical-linear-models-bayes-vs-frequentist/12012/2)) whereas for Bayes these extra levels are (hyper-?)parameters that you estimate directly
-- The upshot is that you only get uncertainty estimates for all your interaction terms in the mulitilevel specification with Bayes
+# Part Two: Variation in the outcome
 
 
 
@@ -187,9 +305,15 @@ class: center, middle, inverse, my-one-page-font
 # Non-linear outcomes
 
 - What about the variation in the outcome?
+- Standard way to do this is with a caterpillar plot
+- Works well for linear outcomes
+- Can also use them for non-linear outcomes, but they're more difficult to interpret because the results are conditional on the values of the other variables in the model
+
+
+---
+# Solution: prediction for inference
 - Don't use the estimated parameters from the regression model (McElreath 2019)
-- Use Average Predictive Comparisons (Gelman and Pardoe 2007)
-- Specifically, in our case we used Marginal Effects at Representative values (MERs)
+- Use Average Predictive Comparisons (Gelman and Pardoe 2007). Specifically, in our case we used Marginal Effects at Representative values (MERs)
 - Decide what combinations of independent variables we're interested in, use the model to estimate outcomes for people with that combination of independent variables
 - These predictions incorporate the effects of all our interactions - that is, the levels of our 'multilevel' model
 - NB some types of predictive comparisons, particularly Average Marginal Effects, can get confusing here! To create a counterfactual you might be making predictions for combinations of independent variables you haven't observed in your dataset. Need to think carefully about what 'level' of the random effect to give this counterfactual (default is to average over effects of all interactions)
@@ -199,6 +323,14 @@ class: center, middle, inverse, my-one-page-font
 # In review
 - We want to fit a model with lots of interactions and which helps us understand variation in our outcome between people with the same observables
 - We can do this by fitting our interactions as a level in a multilevel model and by interpreting the model through average predictive comparisons
+
+
+---
+class: center, middle, inverse
+
+# Part Three: Our study
+
+
 
 ---
 
@@ -252,7 +384,7 @@ Three steps:
 
 1. Make __convictions trajectory groups__ with Latent Class Growth Curves [(Nagin and Land 1993)](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1745-9125.1993.tb01133.x)
 2. Fit "intersectional" [(Bell et al. 2019)](https://psycnet.apa.org/fulltext/2019-30571-005.html) multinomial logistic regression model to __estimate associations__ between youth justice and child welfare __system contact and adult convictions class__
-3. Interpret model results through __estimated probability of convictions class membersip__, conditional different configurations of our independent variables (i.e. Average Predictive Comparisons, [Gelman and Pardoe 2007](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1467-9531.2007.00181.x))
+3. Interpret model results through __estimated probability of convictions class membership__, conditional different configurations of our independent variables (i.e. Average Predictive Comparisons, [Gelman and Pardoe 2007](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1467-9531.2007.00181.x))
 
 
 ---
@@ -289,9 +421,10 @@ knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/esc-202
 ---
 # Concluding thoughts
 - This is a first step: from this model we can derive __other quantities of interest__
-   - Look at __other__ combinations of __childhood factors__
-   - Expand comparisons across __different developmental trajectories__
 - What does IS measure here? Must __avoid deficit interpretation__ [(Walter and Andersen 2013)](https://www.taylorfrancis.com/books/e/9781315426570)
+- Of the two aspects of quantitative intersectionality, I think taking the variation in the outcome seriously has made more of an impression on me
+
+
 
 ---
 name: thanks
@@ -305,7 +438,7 @@ Thank you to Heidi Perrett at Griffith University for facilitating data access
 Ben Matthews<sup>1</sup>, Susan McVie<sup>1</sup>, Carleen Thompson<sup>2</sup> and Anna Stewart<sup>2</sup>
 
 
-European Society of Criminology, 2020-09-11
+Q-Step Exeter, 2020-11-11
 
 
 <sup>1</sup>University of Edinburgh
