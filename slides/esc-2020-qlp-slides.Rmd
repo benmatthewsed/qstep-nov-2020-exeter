@@ -114,7 +114,8 @@ class: center, middle, inverse, my-one-page-font
 # Problems with interactions
 - In the MAIHDA approach we want to fit interactions between __all__ our independent variables
 - Why do we need a fancy multilevel model for this?
-- Adding too many interaction effects in a standard regression model creates problems because of the __'curse of dimensionality'__
+- Lots of interactions leads to __multiple testing__ and so we'd [get some statistically significant results by chance](https://psycnet.apa.org/fulltext/2019-30571-005.html)
+- Also, adding too many interaction effects in a standard regression model creates problems because of the __'curse of dimensionality'__
 - Every extra (categorical) variable in the interaction splits the sample up further and further, making estimates unreliable as interactions for many combinations of variables are based on increasingly small amounts of data
 
 ---
@@ -280,7 +281,7 @@ knitr::include_graphics("https://m-clark.github.io/img/shrinkage/unbalanced.gif"
 
 ---
 # Why a "multilevel" approach? Other factors
-- People like Intra-class Correlation Coefficient as a measure for how much 'intersectionality' there is in the model
+- People like Intra-class Correlation Coefficient as a measure for how much ["global" 'intersectionality'](https://psycnet.apa.org/fulltext/2019-30571-005.html) there is in the model
 - ... but you don't have to use a multilevel model though! There are also other methods of doing this regularization: 
   - Penalized regression (see discussion between [Lizotte and colleagues (2020)](https://www.sciencedirect.com/science/article/pii/S0277953619304939) and [Evans et al. (2020)](https://www.sciencedirect.com/science/article/pii/S0277953619304927#bib14))
   - ['Sceptical priors' in a Bayesian model](https://www.fharrell.com/post/journey/)
@@ -302,27 +303,25 @@ class: center, middle, inverse
 
 
 ---
-# Non-linear outcomes
-
+# Variation in outcomes
 - What about the variation in the outcome?
-- Standard way to do this is with a caterpillar plot
-- Works well for linear outcomes
-- Can also use them for non-linear outcomes, but they're more difficult to interpret because the results are conditional on the values of the other variables in the model
+- We want to avoid the ["Tyranny of the averages"](https://www.sciencedirect.com/science/article/pii/S0277953617307566?via%3Dihub#sec5) - assuming that everyone with the same characteristics has the same relationship between a 'risk factor' and the outcome we're interested in
+- For non-linear models we have the general problem that any parameter estimate is "extraordinarily hard to interpret" because the effects of every variable are _already_ conditional on the values of other variables (McElreath)
 
 
 ---
 # Solution: prediction for inference
-- Don't use the estimated parameters from the regression model (McElreath 2019)
-- Use Average Predictive Comparisons (Gelman and Pardoe 2007). Specifically, in our case we used Marginal Effects at Representative values (MERs)
-- Decide what combinations of independent variables we're interested in, use the model to estimate outcomes for people with that combination of independent variables
-- These predictions incorporate the effects of all our interactions - that is, the levels of our 'multilevel' model
-- NB some types of predictive comparisons, particularly Average Marginal Effects, can get confusing here! To create a counterfactual you might be making predictions for combinations of independent variables you haven't observed in your dataset. Need to think carefully about what 'level' of the random effect to give this counterfactual (default is to average over effects of all interactions)
-- NB MERs don't tell us how _common_ these combinations are!
+- Use Average Predictive Comparisons (Gelman and Pardoe 2007) Specifically, in our case we used __Marginal Effects at Representative values__ (MERs)
+- Decide what combinations of independent variables we're interested in (i.e., pick our representative values), use the model to estimate outcomes for people with that combination of independent variables (see also King et al. 2000)
+- These predictions incorporate the effects of all our interactions - that is, the levels of our 'multilevel' model - as well as the main effects of these variables
+- For categorical models we get a distribution of outcomes across the categories of our outcome - just what we want!
+- We can still look at parameter estimates for specific interactions
+- NB MERs are __conditional__ effects: they __don't tell us how common__ these combinations of independent variables are
 
 ---
 # In review
-- We want to fit a model with lots of interactions and which helps us understand variation in our outcome between people with the same observables
-- We can do this by fitting our interactions as a level in a multilevel model and by interpreting the model through average predictive comparisons
+- We want to fit a model with __lots of interactions__ and which helps us understand __variation in our outcome__ between people with the same observables
+- We can do this by fitting our interactions as a level in a __multilevel model__ and by interpreting the model through __Marginal Effects at Representative values__ to get a distribution of outcomes for people with a given set of characteristics
 
 
 ---
@@ -383,8 +382,25 @@ tibble::tribble(
 Three steps:
 
 1. Make __convictions trajectory groups__ with Latent Class Growth Curves [(Nagin and Land 1993)](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1745-9125.1993.tb01133.x)
-2. Fit "intersectional" [(Bell et al. 2019)](https://psycnet.apa.org/fulltext/2019-30571-005.html) multinomial logistic regression model to __estimate associations__ between youth justice and child welfare __system contact and adult convictions class__
-3. Interpret model results through __estimated probability of convictions class membership__, conditional different configurations of our independent variables (i.e. Average Predictive Comparisons, [Gelman and Pardoe 2007](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1467-9531.2007.00181.x))
+2. Fit intersectional [(Bell et al. 2019)](https://psycnet.apa.org/fulltext/2019-30571-005.html) multinomial logistic regression model to __estimate associations__ between youth justice and child welfare __system contact and adult convictions class__
+3. Interpret model results through __estimated probability of convictions class membership__, conditional different configurations of our independent variables
+
+---
+# Latent Class Growth Curves
+
+```{r nagin_land, out.width = '60%', echo = FALSE, fig.align="center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep_exeter/master/figures/nagin_land_quote.png")
+```
+
+_Nagin and Land (1993:346) Age, Criminal Careers, and Population Heterogeneity: Specification and Estimation of a Nonparametric, Mixed Poisson Model, Criminology, Vol. 31, No. 3, pp. 327:362_
+
+---
+# Latent Class Growth Curves
+
+- Latent Class Growth Curves (LCGM, Nagin and Land 1993, also known as Semi-Parametric Group-Based Modelling or Group-Based Trajectory Modelling... or as a specific case of Latent Class Mixed Models with no random effect... or as a specific case of Growth Mixture Models with no within-class variance), __makes groups out of data__ based on a repeated measures dependent variable
+- Each group gets a trajectory (in our case, probability of conviction in a given year)
+- LCGMs are very popular (if divisive) in criminology (Nagin and Land 2005a, 2005b; Sampson and Laub 2005)
+
 
 
 ---
@@ -398,6 +414,9 @@ class: center, middle, inverse
 ```{r y18_trajectories, out.width = '78%', echo = FALSE, fig.align = "center"}
 knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/y18_trajectories.png")
 ```
+
+---
+
 
 
 ---
