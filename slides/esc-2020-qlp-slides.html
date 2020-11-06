@@ -50,32 +50,43 @@ Q-Step Exeter, 2020-11-11
 
 # Overview
 
-1. Concepts and methods
-2. Our study
+1. Conceptual background: quantitative intersectionality
+2. Methodology: Multilevel models for quantitative intersectionality
+3. Our study: Exploring inequalities in the impact of childhood system contact on adult criminal conviction trajectories by sex and Indigenous status
+
+---
+class: center, middle, inverse
+
+# Conceptual background: Quantiative intersectionality
 
 
 ---
 
-# What do we mean by quantitative intersectionality?
+# What is intersectionality?
+- The [Wikipedia](https://en.wikipedia.org/wiki/Intersectionality) (therefore correct) definition: "Intersectionality is a theoretical framework for understanding how aspects of a person's social and political identities... combine to create different modes of discrimination and privilege. Intersectionality identifies advantages and disadvantages that are felt by people due to a combination of factors."
+- As we're in 2020 exactly what "intersectionality" _means_ is [also part of the culture wars](https://www.vox.com/the-highlight/2019/5/20/18542843/intersectionality-conservatism-law-race-gender-discrimination)
 
-// need to clear this up
+---
 
-- Lesley McCall (2005) talks about three kinds of intersectional "complexity":
+# What is intersectionality?
+- Analytically, "intersectionality" covers researchers in different theoretical traditions and with different reserach methods
+- Lesley McCall (2005) talks about three broad kinds of intersectional "complexity":
   - Anticategorical - "deconstructs analytical categories"
-  - Intracategorical - "focus on particular social groups at neglected points of
-intersection... in order to reveal the complexity of lived experience"
+  - Intracategorical - "focus on particular social groups at neglected points of intersection... in order to reveal the complexity of lived experience"
   - Intercategorical - "provisionally adopt existing analytical categories to document relationships of inequality among social groups and changing configurations of inequality"
-- Quantitative studies of intersectionality are typically doing intercategorical research
+- Each of these archetypal approaches has its own typical set of methods. Quantitative studies of intersectionality are typically doing __intercategorical__ research
+
+
 
 
 ---
 # Quantiative intersectionality
 
-- Has two main components:
+- My introduction to this is through epidemiology, though McCall herself is a sociologist and political scientist
+- So far as I can tell, two main methodological components:
   1. Fits (often quite complicated) models with _interactions_ between the effects of different independent variables (so, social characteristics) and the outcome
-  2. Wants to avoid essentializing social groups by focusing on _variation_ in outcomes rather than just average outcomes _for people with the same observable characteristics
-  
-// more on the essentialising here - maybe say in the linear case it's different?
+  2. Wants to avoid essentializing social groups by accounting for _variation_ in outcomes rather than just average outcomes _for people with the same observable characteristics_
+- Juan Merlo calls this combination "Multilevel Analysis of Individual Heterogeneity and Discriminatory Accuracy" (MAIHDA)
 
 ---
 class: center, middle, inverse, my-one-page-font
@@ -85,32 +96,196 @@ class: center, middle, inverse, my-one-page-font
 ---
 
 # Problems with interactions
+- In the MAIHDA approach we want to fit interactions between __all__ our independent variables
 - Why do we need a fancy multilevel model for this?
-- Adding too many interaction effects in a standard regression model creates problems because of the 'curse of dimensionality'
-- Every extra variable in the interaction splits the sample up further and further, making estimates unreliable and potentially giving massive standard errors!
-- In McElreath's terminology, this is because every time the model meets a new combination of variables it 'forgets' about the last combination of variables
+- Adding too many interaction effects in a standard regression model creates problems because of the __'curse of dimensionality'__
+- Every extra (categorical) variable in the interaction splits the sample up further and further, making estimates unreliable as interactions for many combinations of variables are based on increasingly small amounts of data
 
+---
+# Curse of dimensionality
+
+.pull-left[
+
+```r
+library(tidyverse)
+
+set.seed(
+  nchar("curse of dimensionality") ^ 4
+  )
+
+n &lt;- 80000
+```
+]
+
+
+.pull-right[
+
+]
+
+
+---
+# Curse of dimensionality
+
+
+```r
+df &lt;- 
+tibble(
+  gender = sample(c("female", "male"), # we don't have data for nonbinary
+                  size = n,
+                  replace = TRUE,
+                  prob = c(0.49, 0.49)),
+  Indigenous_status = sample(c("IS", "non-IS"),
+              size = n,
+              replace = TRUE,
+              prob = c(0.04, 0.96)),
+  child_welfare = sample(c("CW contact", "no CW contact"),
+              size = n,
+              replace = TRUE,
+              prob = c(0.15, 0.80)),
+  youth_justice = sample(c("YJ contact", "no YJ contact"),
+              size = n,
+              replace = TRUE,
+              prob = c(0.15, 0.80)),
+  convicted = sample(c(1, 0),
+               size = n,
+               replace = TRUE,
+               prob = c(0.2, 0.8)),
+)
+```
+
+---
+# Curse of dimensionality
+
+.left-column[
+
+```r
+df %&gt;% 
+  count(
+    gender, 
+    Indigenous_status, 
+    convicted) %&gt;% 
+  arrange(n)
+```
+]
+
+.right-column[
+
+```
+## # A tibble: 8 x 4
+##   gender Indigenous_status convicted     n
+##   &lt;chr&gt;  &lt;chr&gt;                 &lt;dbl&gt; &lt;int&gt;
+## 1 male   IS                        1   289
+## 2 female IS                        1   327
+## 3 female IS                        0  1286
+## 4 male   IS                        0  1299
+## 5 female non-IS                    1  7637
+## 6 male   non-IS                    1  7684
+## 7 female non-IS                    0 30567
+## 8 male   non-IS                    0 30911
+```
+]
+
+
+
+---
+# Curse of dimensionality
+
+.left-column[
+
+```r
+df %&gt;% 
+  count(
+    gender, 
+    Indigenous_status, 
+    child_welfare,
+    convicted) %&gt;% 
+  arrange(n)
+```
+]
+
+.right-column[
+
+```
+## # A tibble: 16 x 5
+##    gender Indigenous_status child_welfare convicted     n
+##    &lt;chr&gt;  &lt;chr&gt;             &lt;chr&gt;             &lt;dbl&gt; &lt;int&gt;
+##  1 male   IS                CW contact            1    53
+##  2 female IS                CW contact            1    56
+##  3 female IS                CW contact            0   205
+##  4 male   IS                CW contact            0   211
+##  5 male   IS                no CW contact         1   236
+##  6 female IS                no CW contact         1   271
+##  7 female IS                no CW contact         0  1081
+##  8 male   IS                no CW contact         0  1088
+##  9 female non-IS            CW contact            1  1171
+## 10 male   non-IS            CW contact            1  1260
+## 11 male   non-IS            CW contact            0  4862
+## 12 female non-IS            CW contact            0  4892
+## 13 male   non-IS            no CW contact         1  6424
+## 14 female non-IS            no CW contact         1  6466
+## 15 female non-IS            no CW contact         0 25675
+## 16 male   non-IS            no CW contact         0 26049
+```
+]
+
+---
+# Curse of dimensionality
+
+.left-column[
+
+```r
+df %&gt;% 
+  count(
+    gender, 
+    Indigenous_status, 
+    child_welfare,
+    youth_justice,
+    convicted) %&gt;% 
+  arrange(n)
+```
+]
+
+.right-column[
+
+```
+## # A tibble: 32 x 6
+##    gender Indigenous_status child_welfare youth_justice convicted     n
+##    &lt;chr&gt;  &lt;chr&gt;             &lt;chr&gt;         &lt;chr&gt;             &lt;dbl&gt; &lt;int&gt;
+##  1 male   IS                CW contact    YJ contact            1     5
+##  2 female IS                CW contact    YJ contact            1    14
+##  3 male   IS                CW contact    YJ contact            0    28
+##  4 female IS                CW contact    YJ contact            0    34
+##  5 male   IS                no CW contact YJ contact            1    40
+##  6 female IS                CW contact    no YJ contact         1    42
+##  7 male   IS                CW contact    no YJ contact         1    48
+##  8 female IS                no CW contact YJ contact            1    49
+##  9 male   non-IS            CW contact    YJ contact            1   170
+## 10 female IS                CW contact    no YJ contact         0   171
+## # ... with 22 more rows
+```
+]
 
 ---
 # Bias and variance
-- This feeds into a big topic in statistics: trading off bias and variance
-- We want to make our model actually fit the data in our data _worse_ (i.e. add bias) by making it less sensitive to extreme values when there isn't a lot of data to support them
-- We want the model to find interactions _if there's enough data to support them_, but if there isn't enough data for a combination of variables we want the model to be _skeptical_ about estimating a huge interaction effects
+- To resolve this, we want the model to find interactions _if there's enough data to support them_, but if there isn't enough data for a combination of variables we want the model to be _sceptical_ about estimating a huge interaction effects
+- This feeds into a big topic in statistics: trading off [bias and variance](https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff)
+- Basically we want to make our model actually fit the data in our dataset _worse_ (i.e. add bias) by making it less sensitive to extreme values of these interaction effects when there isn't a lot of data to support them
+- Yes, making the model fit your data worse sounds absolutely bonkers. I looked for a simple explainer online and there wasn't one I could find. Andrew Gelman describes it like this: "The basic idea is as follows: if you’re estimating something, you can slice your data finer and finer... each time getting a purer—and less biased—estimate. But each subdivision... reduces your sample size... hence the variance of your estimate goes up."
+
 
 ---
-# Why a "multilevel" approach?
-- Using multilevel models lets us be a bit more skeptical about large effects for parameters when there isn't a lot of data to support them
-- Multilevel models do this by 'pooling' information/'borrowing strength'/'shrinking' across clusters (in this case, across combinations of independent variables - i.e., interactions), and figuring out how much information should be pooled based on the data itself
-- This is because the model assumes that clusters are drawn from a Normal distribution, making it skeptical of extreme values
-- Specifically, Multilevel models figure out how much shrinkage to perform based on the data itself (Bell et al. 2019)
-- Clarke says: "Data nuances will determine the relative amount of ‘strength borrowed’, but in general, [multilevel] models provide a good way for the data to speak for itself when it should, and reflect an ‘average’ when there is little information."
-
+# Why a "multilevel" approach? Shrinkage
+- Using multilevel models lets us be a bit more sceptical about large effects for parameters when there isn't a lot of data
+- Multilevel models do this by 'pooling' information/'borrowing strength'/'shrinking' estimates across clusters
+- Often these clusters are schools or hospitals or courts, in this case our clusters are combinations of independent variables (i.e. our interactions)
+- This is because in the standard multilevel set up, the model assumes that clusters are drawn from a Normal distribution, making it sceptical of extreme values
+- Importantly for us, the model figures out how much information should be pooled based on the data itself: as [Michael Clark says](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models): "Data nuances will determine the relative amount of ‘strength borrowed’, but in general, [multilevel] models provide a good way for the data to speak for itself when it should, and reflect an ‘average’ when there is little information."
 
 ---
 # What shrinkage looks like
 
 .left-column[
-From [Michael Clark's excellent blog post](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models)
+From [Michael Clark's excellent blog post](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models) on shrinkage: estimates from individual clusters get 'shrunk' towards the global mean
 ]
 
 .right-column[
@@ -119,35 +294,36 @@ From [Michael Clark's excellent blog post](https://m-clark.github.io/posts/2019-
 
 ---
 # What shrinkage looks like
-
 .left-column[
-Here the data are unbalanced, so we have more people in some groups than others; estimates from the smaller groups get shrunk more towards the average effect
-
+Here the data are unbalanced, so we have more people in some groups than others; estimates from the smaller groups get shrunk more towards the average effect. The model figures out how much to shrink by itself!
 ]
-
 
 .right-column[
 
 &lt;img src="https://m-clark.github.io/img/shrinkage/unbalanced.gif" width="80%" /&gt;
 ]
 
-
-
 ---
-class: center, middle, inverse, my-one-page-font
-
-# _Interlude_: terminology
-
-
----
-# Terminology
-- Terminology about "multilevel" models is a mess! The maths is the same (!), but easier to think of this as 'partial pooling' or 'adaptive regularization' (McElreath 2016)
-- There are also other methods of doing this regularization: 
+# Why a "multilevel" approach? Other factors
+- People like Intra-class Correlation Coefficient as a measure for how much 'intersectionality' there is in the model
+- This is me speculating, but in general people in the social sciences who are doing this kind of work are pretty familiar with multilevel models (at least, more so than some other approaches to this), and you can fit them with reasonably standard software (although it pretty much has to be Bayes) which makes it more approachable
+- NB you don't have to use a multilevel model though! There are also other methods of doing this regularization: 
   - Penalized regression
-  - 'Skeptical priors' in a Bayesian model (Harrell)
-- Debate in the literature about the best way, but multilevel models are recommended by [LIST]
+  - ['Sceptical priors' in a Bayesian model](https://www.fharrell.com/post/journey/)
+
+  
+---
+# Some technical details
+
 - Okay we're really getting technical here but I __think__ there's also a difference here in how you'd understand what a multilevel model _is_ between Frequentist and Bayesian senses - TLDR is that a Frequentist approach treats the 'levels' as part of the error term in the model (and so ["integrates them out of the likelihood"](https://discourse.mc-stan.org/t/hierarchical-linear-models-bayes-vs-frequentist/12012/2)) whereas for Bayes these extra levels are (hyper-?)parameters that you estimate directly
-- The upshot is that you only get uncertainty estimates for all your interaction terms in the mulitilevel specification with Bayes
+- The upshot is that you only get uncertainty estimates for all your interaction terms in the multilevel specification with Bayes
+- I fit these models in `R` using  the `{brms}` package. Others who have adopted this approach have used MLWiN which you can call through Stata
+
+
+---
+class: center, middle, inverse
+
+# Part Two: Variation in the outcome
 
 
 
@@ -155,9 +331,15 @@ class: center, middle, inverse, my-one-page-font
 # Non-linear outcomes
 
 - What about the variation in the outcome?
+- Standard way to do this is with a caterpillar plot
+- Works well for linear outcomes
+- Can also use them for non-linear outcomes, but they're more difficult to interpret because the results are conditional on the values of the other variables in the model
+
+
+---
+# Solution: prediction for inference
 - Don't use the estimated parameters from the regression model (McElreath 2019)
-- Use Average Predictive Comparisons (Gelman and Pardoe 2007)
-- Specifically, in our case we used Marginal Effects at Representative values (MERs)
+- Use Average Predictive Comparisons (Gelman and Pardoe 2007). Specifically, in our case we used Marginal Effects at Representative values (MERs)
 - Decide what combinations of independent variables we're interested in, use the model to estimate outcomes for people with that combination of independent variables
 - These predictions incorporate the effects of all our interactions - that is, the levels of our 'multilevel' model
 - NB some types of predictive comparisons, particularly Average Marginal Effects, can get confusing here! To create a counterfactual you might be making predictions for combinations of independent variables you haven't observed in your dataset. Need to think carefully about what 'level' of the random effect to give this counterfactual (default is to average over effects of all interactions)
@@ -167,6 +349,14 @@ class: center, middle, inverse, my-one-page-font
 # In review
 - We want to fit a model with lots of interactions and which helps us understand variation in our outcome between people with the same observables
 - We can do this by fitting our interactions as a level in a multilevel model and by interpreting the model through average predictive comparisons
+
+
+---
+class: center, middle, inverse
+
+# Part Three: Our study
+
+
 
 ---
 
@@ -286,7 +476,7 @@ Three steps:
 
 1. Make __convictions trajectory groups__ with Latent Class Growth Curves [(Nagin and Land 1993)](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1745-9125.1993.tb01133.x)
 2. Fit "intersectional" [(Bell et al. 2019)](https://psycnet.apa.org/fulltext/2019-30571-005.html) multinomial logistic regression model to __estimate associations__ between youth justice and child welfare __system contact and adult convictions class__
-3. Interpret model results through __estimated probability of convictions class membersip__, conditional different configurations of our independent variables (i.e. Average Predictive Comparisons, [Gelman and Pardoe 2007](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1467-9531.2007.00181.x))
+3. Interpret model results through __estimated probability of convictions class membership__, conditional different configurations of our independent variables (i.e. Average Predictive Comparisons, [Gelman and Pardoe 2007](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1467-9531.2007.00181.x))
 
 
 ---
@@ -319,9 +509,10 @@ class: center, middle, inverse
 ---
 # Concluding thoughts
 - This is a first step: from this model we can derive __other quantities of interest__
-   - Look at __other__ combinations of __childhood factors__
-   - Expand comparisons across __different developmental trajectories__
 - What does IS measure here? Must __avoid deficit interpretation__ [(Walter and Andersen 2013)](https://www.taylorfrancis.com/books/e/9781315426570)
+- Of the two aspects of quantitative intersectionality, I think taking the variation in the outcome seriously has made more of an impression on me
+
+
 
 ---
 name: thanks
@@ -335,7 +526,7 @@ Thank you to Heidi Perrett at Griffith University for facilitating data access
 Ben Matthews&lt;sup&gt;1&lt;/sup&gt;, Susan McVie&lt;sup&gt;1&lt;/sup&gt;, Carleen Thompson&lt;sup&gt;2&lt;/sup&gt; and Anna Stewart&lt;sup&gt;2&lt;/sup&gt;
 
 
-European Society of Criminology, 2020-09-11
+Q-Step Exeter, 2020-11-11
 
 
 &lt;sup&gt;1&lt;/sup&gt;University of Edinburgh
@@ -411,6 +602,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -428,17 +645,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {
