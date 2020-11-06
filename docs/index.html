@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Q-Step presentation</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ben Matthews" />
+    <meta name="date" content="2020-11-11" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+name: title
+class: center, middle, inverse, my-one-page-font
+
+&lt;style type="text/css"&gt;
+.remark-slide-content {
+    font-size: 25px;
+    padding: 1em 4em 1em 4em;
+}
+.my-one-page-font {
+  font-size: 20px;
+}
+&lt;/style&gt;    
+
+
+# Understanding the relationships between risk factors, intersectional identities and criminal career trajectories: A multilevel approach
+
+Ben Matthews&lt;sup&gt;1&lt;/sup&gt;, Susan McVie&lt;sup&gt;1&lt;/sup&gt;, Carleen Thompson&lt;sup&gt;2&lt;/sup&gt; and Anna Stewart&lt;sup&gt;2&lt;/sup&gt;
+
+Q-Step Exeter, 2020-11-11
+
+&lt;sup&gt;1&lt;/sup&gt;University of Edinburgh
+&lt;sup&gt;2&lt;/sup&gt;Griffith University
+
+.pull-left[
+![](https://www.understanding-inequalities.ac.uk/sites/all/themes/theme935/logo.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+&lt;img src="https://esrc.ukri.org/esrc/includes/themes/MasterSite/images/logo-1.png" width="60%" /&gt;
+]
+
+---
+
+# Overview
+
+1. Conceptual background: quantitative intersectionality
+2. Methodology: Multilevel models for quantitative intersectionality
+3. Our study: Exploring inequalities in the impact of childhood system contact on adult criminal conviction trajectories by sex and Indigenous status
+
+---
+class: center, middle, inverse
+
+# Conceptual background: Quantiative intersectionality
+
+
+---
+
+# What is intersectionality?
+- Coined by Kimberlé Crenshaw, the [Wikipedia](https://en.wikipedia.org/wiki/Intersectionality) (therefore correct) definition is: "a theoretical framework for understanding how aspects of a person's social and political identities... combine to create different modes of discrimination and privilege. Intersectionality identifies advantages and disadvantages that are felt by people due to a combination of factors."
+- (As we're in 2020 exactly what "intersectionality" _means_ is [also part of the culture wars](https://www.vox.com/the-highlight/2019/5/20/18542843/intersectionality-conservatism-law-race-gender-discrimination)...)
+
+---
+
+# What is intersectionality?
+- Analytically, "intersectionality" covers researchers in different theoretical traditions and with different research methods
+- Lesley McCall (2005) talks about three broad kinds of intersectional "complexity":
+  - Anticategorical - "deconstructs analytical categories"
+  - Intracategorical - "focus on particular social groups at neglected points of intersection... in order to reveal the complexity of lived experience"
+  - Intercategorical - "provisionally adopt existing analytical categories to document relationships of inequality among social groups and changing configurations of inequality"
+- Each of these archetypal approaches has its own typical set of methods. Quantitative studies of intersectionality are typically doing __intercategorical__ research
+
+
+
+
+---
+# Quantiative intersectionality
+
+- (NB this is a partial introduction - my route in was through epidemiology, though McCall herself is a sociologist and political scientist)
+- So far as I can tell, quantitative intersectionality two main methodological components:
+  1. Fits (often quite complicated) models with _interactions_ between the effects of different independent variables (so, social characteristics) and the outcome
+  2. Wants to avoid essentializing social groups by accounting for _variation_ in outcomes rather than just average outcomes _for people with the same observable characteristics_
+- Juan Merlo calls this combination "Multilevel Analysis of Individual Heterogeneity and Discriminatory Accuracy" (MAIHDA)
+
+
+---
+class: center, middle, inverse, my-one-page-font
+
+# Intersectionality, interactions
+
+---
+
+# Problems with interactions
+- In the MAIHDA approach we want to fit interactions between __all__ our independent variables
+- Why do we need a fancy multilevel model for this?
+- Lots of interactions leads to __multiple testing__ and so we'd [get some statistically significant results by chance](https://psycnet.apa.org/fulltext/2019-30571-005.html)
+- Also, adding too many interaction effects in a standard regression model creates problems because of the __'curse of dimensionality'__
+- Every extra (categorical) variable in the interaction splits the sample up further and further, making estimates unreliable as interactions for many combinations of variables are based on increasingly small amounts of data
+
+---
+# Curse of dimensionality
+
+.pull-left[
+
+```r
+library(tidyverse)
+
+set.seed(
+  nchar("curse of dimensionality") ^ 4
+  )
+
+n &lt;- 80000
+```
+]
+
+
+.pull-right[
+
+]
+
+
+---
+# Curse of dimensionality
+
+
+```r
+df &lt;- 
+tibble(
+  gender = sample(c("female", "male"), # we don't have data for nonbinary
+                  size = n,
+                  replace = TRUE,
+                  prob = c(0.49, 0.49)),
+  Indigenous_status = sample(c("IS", "non-IS"),
+              size = n,
+              replace = TRUE,
+              prob = c(0.04, 0.96)),
+  child_welfare = sample(c("CW contact", "no CW contact"),
+              size = n,
+              replace = TRUE,
+              prob = c(0.15, 0.80)),
+  youth_justice = sample(c("YJ contact", "no YJ contact"),
+              size = n,
+              replace = TRUE,
+              prob = c(0.15, 0.80)),
+  convicted = sample(c(1, 0),
+               size = n,
+               replace = TRUE,
+               prob = c(0.2, 0.8)),
+)
+```
+
+---
+# Curse of dimensionality
+
+.left-column[
+
+```r
+df %&gt;% 
+  count(
+    gender, 
+    Indigenous_status, 
+    convicted) %&gt;% 
+  arrange(n)
+```
+]
+
+.right-column[
+
+```
+## # A tibble: 8 x 4
+##   gender Indigenous_status convicted     n
+##   &lt;chr&gt;  &lt;chr&gt;                 &lt;dbl&gt; &lt;int&gt;
+## 1 male   IS                        1   289
+## 2 female IS                        1   327
+## 3 female IS                        0  1286
+## 4 male   IS                        0  1299
+## 5 female non-IS                    1  7637
+## 6 male   non-IS                    1  7684
+## 7 female non-IS                    0 30567
+## 8 male   non-IS                    0 30911
+```
+]
+
+
+
+---
+# Curse of dimensionality
+
+.left-column[
+
+```r
+df %&gt;% 
+  count(
+    gender, 
+    Indigenous_status, 
+    child_welfare,
+    convicted) %&gt;% 
+  arrange(n)
+```
+]
+
+.right-column[
+
+```
+## # A tibble: 16 x 5
+##    gender Indigenous_status child_welfare convicted     n
+##    &lt;chr&gt;  &lt;chr&gt;             &lt;chr&gt;             &lt;dbl&gt; &lt;int&gt;
+##  1 male   IS                CW contact            1    53
+##  2 female IS                CW contact            1    56
+##  3 female IS                CW contact            0   205
+##  4 male   IS                CW contact            0   211
+##  5 male   IS                no CW contact         1   236
+##  6 female IS                no CW contact         1   271
+##  7 female IS                no CW contact         0  1081
+##  8 male   IS                no CW contact         0  1088
+##  9 female non-IS            CW contact            1  1171
+## 10 male   non-IS            CW contact            1  1260
+## 11 male   non-IS            CW contact            0  4862
+## 12 female non-IS            CW contact            0  4892
+## 13 male   non-IS            no CW contact         1  6424
+## 14 female non-IS            no CW contact         1  6466
+## 15 female non-IS            no CW contact         0 25675
+## 16 male   non-IS            no CW contact         0 26049
+```
+]
+
+---
+# Curse of dimensionality
+
+.left-column[
+
+```r
+df %&gt;% 
+  count(
+    gender, 
+    Indigenous_status, 
+    child_welfare,
+    youth_justice,
+    convicted) %&gt;% 
+  arrange(n)
+```
+]
+
+.right-column[
+
+```
+## # A tibble: 32 x 6
+##    gender Indigenous_status child_welfare youth_justice convicted     n
+##    &lt;chr&gt;  &lt;chr&gt;             &lt;chr&gt;         &lt;chr&gt;             &lt;dbl&gt; &lt;int&gt;
+##  1 male   IS                CW contact    YJ contact            1     5
+##  2 female IS                CW contact    YJ contact            1    14
+##  3 male   IS                CW contact    YJ contact            0    28
+##  4 female IS                CW contact    YJ contact            0    34
+##  5 male   IS                no CW contact YJ contact            1    40
+##  6 female IS                CW contact    no YJ contact         1    42
+##  7 male   IS                CW contact    no YJ contact         1    48
+##  8 female IS                no CW contact YJ contact            1    49
+##  9 male   non-IS            CW contact    YJ contact            1   170
+## 10 female IS                CW contact    no YJ contact         0   171
+## # ... with 22 more rows
+```
+]
+
+---
+
+# Interactions, bias and variance
+- So how to resolve this?
+- Conceptually, we want the model to find interactions __if there's enough data to support them__, but if there isn't enough data for a given combination of variables we want the model to be __sceptical__ about estimating a huge interaction effects and move its estimate towards zero
+- In the stats lingo, we're trading off [bias for variance](https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff)
+- We want to make our model actually fit the data in our dataset __worse__ (i.e. add bias) by making it __less sensitive to extreme values__ of these interaction effects when there isn't a lot of data to support them
+- (Yes, making the model fit your data worse is __very unintuitive__/sounds completely bonkers. I looked for a simple explainer online and there wasn't one I could find. [Andrew Gelman describes it like this](https://statmodeling.stat.columbia.edu/2011/10/15/the-bias-variance-tradeoff/): "The basic idea is as follows: if you’re estimating something, you can slice your data finer and finer... each time getting a purer—and less biased—estimate. But each subdivision... reduces your sample size... hence the variance of your estimate goes up.")
+
+
+---
+# Why a "multilevel" approach? Shrinkage
+- __Multilevel models__ are one way to let us be a bit __sceptical__ of extreme large effects for parameters when there isn't a lot of data
+- They do this by __'pooling' information__/'borrowing strength'/'shrinking' estimates across clusters
+- Often these clusters are schools or hospitals or courts, in this case our clusters are combinations of independent variables (i.e. our interactions)
+- This is because in the multilevel model assumes that clusters are __drawn from a Normal distribution__, making it sceptical of extreme values
+- Importantly for us, the model figures out how much information should be pooled __based on the data itself__: as [Michael Clark says](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models): "Data nuances will determine the relative amount of ‘strength borrowed’, but in general, [multilevel] models provide a good way for the __data to speak for itself when it should, and reflect an ‘average’ when there is little information__."
+
+---
+# What shrinkage looks like
+
+.left-column[
+From [Michael Clark's excellent blog post](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models) on shrinkage: estimates from individual clusters get 'shrunk' towards the global mean
+]
+
+.right-column[
+&lt;img src="https://m-clark.github.io/img/shrinkage/baseline.gif" width="80%" /&gt;
+]
+
+---
+# What shrinkage looks like
+.left-column[
+Here the data are unbalanced, so we have more people in some groups than others; estimates from the smaller groups get shrunk more towards the average effect.
+]
+
+.right-column[
+
+&lt;img src="https://m-clark.github.io/img/shrinkage/unbalanced.gif" width="80%" /&gt;
+]
+
+---
+# Why a "multilevel" approach? Other factors
+- People like Intra-class Correlation Coefficient as a measure for how much ["global" 'intersectionality'](https://psycnet.apa.org/fulltext/2019-30571-005.html) there is in the model
+- ... but you don't have to use a multilevel model though! There are also other methods of doing this regularization: 
+  - Penalized regression (see discussion between [Lizotte and colleagues (2020)](https://www.sciencedirect.com/science/article/pii/S0277953619304939) and [Evans et al. (2020)](https://www.sciencedirect.com/science/article/pii/S0277953619304927#bib14))
+  - ['Sceptical priors' in a Bayesian model](https://www.fharrell.com/post/journey/)
+- This is me speculating, but in general people in the social sciences who are doing this kind of work are pretty familiar with multilevel models (at least, more so than some of the other approaches?), and you can fit them with reasonably standard software which makes it more approachable
+  
+---
+# Technical interlude
+- Okay we're really getting technical here but I __think__ there's also a difference here in how you'd understand what a multilevel model _is_ between Frequentist and Bayesian senses - the TLDR is that a Frequentist approach treats the 'levels' in a multilevel model as part of the model's error term (and so ["integrates them out of the likelihood"](https://discourse.mc-stan.org/t/hierarchical-linear-models-bayes-vs-frequentist/12012/2)) - and the error term is by definition what you're _not_ modelling. 
+- Whereas for Bayes these extra levels are (hyper-?)parameters that you estimate directly
+- The upshot is that you only get uncertainty estimates for all your interaction terms in the multilevel specification with Bayes, and so this is the recommended approach
+- I fit these models in `R` using  the `{brms}` package. There's a very involved __worked example__ [here](https://gist.github.com/benmatthewsed/a8136944dc31fcc26d2f2e433edaab6d). Others who have adopted this approach have used MLWiN which you can call through Stata
+
+
+---
+class: center, middle, inverse
+
+# Part Two: Variation in the outcome
+
+
+
+---
+# Variation in outcomes
+- What about the variation in the outcome?
+- We want to avoid the ["Tyranny of the averages"](https://www.sciencedirect.com/science/article/pii/S0277953617307566?via%3Dihub#sec5) - assuming that everyone with the same characteristics has the same relationship between a 'risk factor' and the outcome we're interested in
+- For non-linear models we have the general problem that any parameter estimate is "extraordinarily hard to interpret" because the effects of every variable are _already_ conditional on the values of other variables (McElreath)
+
+
+---
+# Solution: prediction for inference
+- Use Average Predictive Comparisons (Gelman and Pardoe 2007) Specifically, in our case we used __Marginal Effects at Representative values__ (MERs)
+- Decide what combinations of independent variables we're interested in (i.e., pick our representative values), use the model to estimate outcomes for people with that combination of independent variables (see also King et al. 2000)
+- These predictions incorporate the effects of all our interactions - that is, the levels of our 'multilevel' model - as well as the main effects of these variables
+- For categorical models we get a distribution of outcomes across the categories of our outcome - just what we want!
+- We can still look at parameter estimates for specific interactions
+- NB MERs are __conditional__ effects: they __don't tell us how common__ these combinations of independent variables are
+
+---
+# In review
+- We want to fit a model with __lots of interactions__ and which helps us understand __variation in our outcome__ between people with the same observables
+- We can do this by fitting our interactions as a level in a __multilevel model__ and by interpreting the model through __Marginal Effects at Representative values__ to get a distribution of outcomes for people with a given set of characteristics
+
+
+---
+class: center, middle, inverse
+
+# Part Three: Our study
+
+
+
+---
+
+# Research background
+1. How do __childhood experiences__ affect __adult convictions__ histories?
+2. Key insight one: childhood experiences affect adult convictions __cumulatively__. Our focus is on 'Crossover children' [(Baidawi, 2020:280)](https://www.tandfonline.com/doi/full/10.1080/0312407X.2019.1686765) who are involved with both youth justice __and__ child projection
+3. Key insight two: the ways in which childhood experiences shape adult outcomes may __vary by both sex and race/ethnicity__ [(Broidy et al. 2015:145)](https://link.springer.com/article/10.1007/s40865-015-0008-z)
+
+---
+# Research question
+- How do the __cumulative__ effects of youth justice and child welfare contact on adult convictions trajectories __vary by sex and race/ethnicity__?
+
+---
+# Data
+- Comes from __Queensland Cross-sector Research Collaboration__ (QCRC)
+- __Linked data sources__ from different administrative departments in Queensland, Australia:
+  - Youth justice
+  - Adult justice
+  - Child protection
+  - Birth register 
+  - Marriages
+- Cohorts registered born in Queensland in 1983 and 1984, followed to age 29
+
+---
+class: my-one-page-font
+
+# Measures
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Variable &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Level &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Count &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Proportion &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Adult conviction &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Convicted &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16802 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20.20 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Not convicted &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 66569 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 79.80 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Indigenous Status (IS) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Indigenous (ever) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4821 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.06 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Non-Indigenous &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 78541 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.94 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Sex &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Female &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 40416 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.48 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Male &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 42946 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.52 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Police Diversion &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9264 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Abuse/Neglect &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3515 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.04 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Youth Justice Charge &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3306 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.04 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OOHC Placement &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 784 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Youth Detention &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 469 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 83371 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+# Methods 
+Three steps:
+
+1. Make __convictions trajectory groups__ with Latent Class Growth Curves [(Nagin and Land 1993)](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1745-9125.1993.tb01133.x)
+2. Fit intersectional [(Bell et al. 2019)](https://psycnet.apa.org/fulltext/2019-30571-005.html) multinomial logistic regression model to __estimate associations__ between youth justice and child welfare __system contact and adult convictions class__
+3. Interpret model results through __estimated probability of convictions class membership__, conditional different configurations of our independent variables
+
+---
+# Latent Class Growth Curves
+
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep_exeter/master/figures/nagin_land_quote.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+_Nagin and Land (1993:346) Age, Criminal Careers, and Population Heterogeneity: Specification and Estimation of a Nonparametric, Mixed Poisson Model, Criminology, Vol. 31, No. 3, pp. 327:362_
+
+---
+# Latent Class Growth Curves
+
+- Latent Class Growth Curves (LCGM, Nagin and Land 1993, also known as Semi-Parametric Group-Based Modelling or Group-Based Trajectory Modelling... or as a specific case of Latent Class Mixed Models with no random effect... or as a specific case of Growth Mixture Models with no within-class variance), __makes groups out of data__ based on a repeated measures dependent variable
+- Each group gets a trajectory (in our case, probability of conviction in a given year)
+- LCGMs are very popular (if divisive) in criminology (Nagin and Land 2005a, 2005b; Sampson and Laub 2005)
+
+
+
+---
+name: results
+class: center, middle, inverse
+
+# Results
+---
+
+# Estimated conviction trajectories
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/y18_trajectories.png" width="78%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+
+---
+
+# Conviction trajectory probabilities
+
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/esc_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Discussion
+- Childhood experiences' relationships with the probability of adult convictions trajectories __do seem to differ by sex and Indigenous status__:
+   - Non-IS men and women have the largest decrease in probability of no/low class membership in presence of all childhood contacts
+   - In contrast IS men have the smallest decrease in probability of no/low class membership in presence of all childhood contacts
+- This is partly because of __'floor effects'__
+- … but the __cumulative effect__ of these risk factors leads to __similar outcomes by sex`*`IS__, despite the very __different baselines__ by sex and IS
+
+---
+# Concluding thoughts
+- This is a first step: from this model we can derive __other quantities of interest__
+- What does IS measure here? Must __avoid deficit interpretation__ [(Walter and Andersen 2013)](https://www.taylorfrancis.com/books/e/9781315426570)
+- Of the two aspects of quantitative intersectionality, I think taking the variation in the outcome seriously has made more of an impression on me
+
+
+
+---
+name: thanks
+class: center, middle, inverse, my-one-page-font
+
+# Thank you!
+
+Thank you to Heidi Perrett at Griffith University for facilitating data access
+
+
+Ben Matthews&lt;sup&gt;1&lt;/sup&gt;, Susan McVie&lt;sup&gt;1&lt;/sup&gt;, Carleen Thompson&lt;sup&gt;2&lt;/sup&gt; and Anna Stewart&lt;sup&gt;2&lt;/sup&gt;
+
+
+Q-Step Exeter, 2020-11-11
+
+
+&lt;sup&gt;1&lt;/sup&gt;University of Edinburgh
+&lt;sup&gt;2&lt;/sup&gt;Griffith University
+
+
+
+.pull-left[
+![](https://www.understanding-inequalities.ac.uk/sites/all/themes/theme935/logo.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+&lt;img src="https://esrc.ukri.org/esrc/includes/themes/MasterSite/images/logo-1.png" width="60%" /&gt;
+]
+
+`@benmatthewsed` | `@U_Inequalities`
+
+---
+name: bonus
+class: center, middle, inverse
+
+# Bonus slides
+
+
+---
+# Prevalence of independent variables by sex and IS
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/iv_proportions.png" width="50%" style="display: block; margin: auto;" /&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
