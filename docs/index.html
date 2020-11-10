@@ -92,14 +92,14 @@ class: center, middle, inverse
 ---
 class: center, middle, inverse, my-one-page-font
 
-# Intersectionality, interactions
+# Intersectionality and interactions
 
 ---
 
 # Problems with interactions
 - In the MAIHDA approach we want to fit interactions between __all__ our independent variables
 - Why do we need a fancy multilevel model for this?
-- Lots of interactions leads to __multiple testing__ and so we'd [get some statistically significant results by chance](https://psycnet.apa.org/fulltext/2019-30571-005.html)
+- Lots of interactions means lots of significance tests, and so problems with __multiple testing__ - we'd [get some statistically significant results by chance](https://psycnet.apa.org/fulltext/2019-30571-005.html)
 - Also, adding too many interaction effects in a standard regression model creates problems because of the __'curse of dimensionality'__
 - Every extra (categorical) variable in the interaction splits the sample up further and further, making estimates unreliable as interactions for many combinations of variables are based on increasingly small amounts of data
 
@@ -143,12 +143,12 @@ tibble(
   child_welfare = sample(c("CW contact", "no CW contact"),
               size = n,
               replace = TRUE,
-              prob = c(0.15, 0.80)),
+              prob = c(0.5, 0.80)),
   youth_justice = sample(c("YJ contact", "no YJ contact"),
               size = n,
               replace = TRUE,
-              prob = c(0.15, 0.80)),
-  convicted = sample(c(1, 0),
+              prob = c(0.10, 0.80)),
+  convicted = sample(c("1", "0"),
                size = n,
                replace = TRUE,
                prob = c(0.2, 0.8)),
@@ -158,114 +158,17 @@ tibble(
 ---
 # Curse of dimensionality
 
-.left-column[
-
-```r
-df %&gt;% 
-  count(
-    gender, 
-    Indigenous_status, 
-    convicted) %&gt;% 
-  arrange(n)
-```
-]
-
-.right-column[
-
-```
-## # A tibble: 8 x 4
-##   gender Indigenous_status convicted     n
-##   &lt;chr&gt;  &lt;chr&gt;                 &lt;dbl&gt; &lt;int&gt;
-## 1 male   IS                        1   289
-## 2 female IS                        1   327
-## 3 female IS                        0  1286
-## 4 male   IS                        0  1299
-## 5 female non-IS                    1  7637
-## 6 male   non-IS                    1  7684
-## 7 female non-IS                    0 30567
-## 8 male   non-IS                    0 30911
-```
-]
-
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/base_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 # Curse of dimensionality
 
-.left-column[
-
-```r
-df %&gt;% 
-  count(
-    gender, 
-    Indigenous_status, 
-    child_welfare,
-    convicted) %&gt;% 
-  arrange(n)
-```
-]
-
-.right-column[
-
-```
-## # A tibble: 16 x 5
-##    gender Indigenous_status child_welfare convicted     n
-##    &lt;chr&gt;  &lt;chr&gt;             &lt;chr&gt;             &lt;dbl&gt; &lt;int&gt;
-##  1 male   IS                CW contact            1    53
-##  2 female IS                CW contact            1    56
-##  3 female IS                CW contact            0   205
-##  4 male   IS                CW contact            0   211
-##  5 male   IS                no CW contact         1   236
-##  6 female IS                no CW contact         1   271
-##  7 female IS                no CW contact         0  1081
-##  8 male   IS                no CW contact         0  1088
-##  9 female non-IS            CW contact            1  1171
-## 10 male   non-IS            CW contact            1  1260
-## 11 male   non-IS            CW contact            0  4862
-## 12 female non-IS            CW contact            0  4892
-## 13 male   non-IS            no CW contact         1  6424
-## 14 female non-IS            no CW contact         1  6466
-## 15 female non-IS            no CW contact         0 25675
-## 16 male   non-IS            no CW contact         0 26049
-```
-]
-
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/yj_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
 ---
 # Curse of dimensionality
 
-.left-column[
-
-```r
-df %&gt;% 
-  count(
-    gender, 
-    Indigenous_status, 
-    child_welfare,
-    youth_justice,
-    convicted) %&gt;% 
-  arrange(n)
-```
-]
-
-.right-column[
-
-```
-## # A tibble: 32 x 6
-##    gender Indigenous_status child_welfare youth_justice convicted     n
-##    &lt;chr&gt;  &lt;chr&gt;             &lt;chr&gt;         &lt;chr&gt;             &lt;dbl&gt; &lt;int&gt;
-##  1 male   IS                CW contact    YJ contact            1     5
-##  2 female IS                CW contact    YJ contact            1    14
-##  3 male   IS                CW contact    YJ contact            0    28
-##  4 female IS                CW contact    YJ contact            0    34
-##  5 male   IS                no CW contact YJ contact            1    40
-##  6 female IS                CW contact    no YJ contact         1    42
-##  7 male   IS                CW contact    no YJ contact         1    48
-##  8 female IS                no CW contact YJ contact            1    49
-##  9 male   non-IS            CW contact    YJ contact            1   170
-## 10 female IS                CW contact    no YJ contact         0   171
-## # ... with 22 more rows
-```
-]
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/both_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -278,8 +181,8 @@ df %&gt;%
 
 
 ---
-# Why a "multilevel" approach? Shrinkage
-- __Multilevel models__ are one way to let us be a bit __sceptical__ of extreme large effects for parameters when there isn't a lot of data
+# Scepticism through shrinkage
+- __Multilevel models__ are one way to let us be a bit __sceptical__ of extremely large effects for parameters when there isn't a lot of data
 - They do this by __'pooling' information__/'borrowing strength'/'shrinking' estimates across clusters
 - Often these clusters are schools or hospitals or courts, in this case our clusters are combinations of independent variables (i.e. our interactions)
 - This is because in the multilevel model assumes that clusters are __drawn from a Normal distribution__, making it sceptical of extreme values
@@ -316,11 +219,17 @@ Here the data are unbalanced, so we have more people in some groups than others;
 - This is me speculating, but in general people in the social sciences who are doing this kind of work are pretty familiar with multilevel models (at least, more so than some of the other approaches?), and you can fit them with reasonably standard software which makes it more approachable
   
 ---
+class: center, middle, inverse
+
+# _Technical interlude_
+
+  
+---
 # Technical interlude
-- Okay we're really getting technical here but I __think__ there's also a difference here in how you'd understand what a multilevel model _is_ between Frequentist and Bayesian senses - the TLDR is that a Frequentist approach treats the 'levels' in a multilevel model as part of the model's error term (and so ["integrates them out of the likelihood"](https://discourse.mc-stan.org/t/hierarchical-linear-models-bayes-vs-frequentist/12012/2)) - and the error term is by definition what you're _not_ modelling. 
-- Whereas for Bayes these extra levels are (hyper-?)parameters that you estimate directly
-- The upshot is that you only get uncertainty estimates for all your interaction terms in the multilevel specification with Bayes, and so this is the recommended approach
-- I fit these models in `R` using  the `{brms}` package. There's a very involved __worked example__ [here](https://gist.github.com/benmatthewsed/a8136944dc31fcc26d2f2e433edaab6d). Others who have adopted this approach have used MLWiN which you can call through Stata
+- Okay we're really getting technical here but I __think__ there's also a difference here in how you'd understand what a multilevel model _is_ between Frequentist and Bayesian senses - the TLDR is that a Frequentist approach treats the 'levels' in a multilevel model as part of the model's error term (and so ["integrates them out of the likelihood"](https://discourse.mc-stan.org/t/hierarchical-linear-models-bayes-vs-frequentist/12012/2)) - and the error term is by definition what you're __not__ modelling. 
+- Whereas for Bayes these extra levels are (hyper-)parameters that you estimate directly
+- The upshot is that I think you only get __uncertainty estimates__ for all your interaction terms in the multilevel specification with __Bayes__, and so this is the recommended approach
+- I fit these models in `R` using  the `{brms}` package. There's a very involved __worked example__ of the approach I took [here](https://gist.github.com/benmatthewsed/a8136944dc31fcc26d2f2e433edaab6d). Others who have adopted this approach have used MLWiN which you can call through Stata
 
 
 ---
@@ -332,10 +241,9 @@ class: center, middle, inverse
 
 ---
 # Variation in outcomes
-- What about the variation in the outcome?
+- What about the describing variation in the outcome?
 - We want to avoid the ["Tyranny of the averages"](https://www.sciencedirect.com/science/article/pii/S0277953617307566?via%3Dihub#sec5) - assuming that everyone with the same characteristics has the same relationship between a 'risk factor' and the outcome we're interested in
-- For non-linear models we have the general problem that any parameter estimate is "extraordinarily hard to interpret" because the effects of every variable are _already_ conditional on the values of other variables (McElreath)
-
+- For non-linear models we also have the general problem that any parameter estimate is "extraordinarily hard to interpret" in isolation because the effects of every variable are _already_ conditional on the values of other variables (McElreath)
 
 ---
 # Solution: prediction for inference
@@ -343,13 +251,61 @@ class: center, middle, inverse
 - Decide what combinations of independent variables we're interested in (i.e., pick our representative values), use the model to estimate outcomes for people with that combination of independent variables (see also King et al. 2000)
 - These predictions incorporate the effects of all our interactions - that is, the levels of our 'multilevel' model - as well as the main effects of these variables
 - For categorical models we get a distribution of outcomes across the categories of our outcome - just what we want!
-- We can still look at parameter estimates for specific interactions
-- NB MERs are __conditional__ effects: they __don't tell us how common__ these combinations of independent variables are
+- We can still look at parameter estimates to see if specific interactions are important, but...
+
+---
+# Problem: interactions
+- The our MERs are __collapsible__: the amount your probability changes from a change in the presence of an independent variable depends on your probability in the absence of the independent variable
+- So the using predictive MERs incorporates both the interactions from our intersectional random effect, but also [__mathematical__, not subject-matter-relevant, interactions](https://www.fharrell.com/post/marg/) as a consequence of converting parameter estimates from the log-odds to the probability scale
+- And so on the probability scale we could find __cumulative__ effects of having multiple independent variables because of these __mathematical__ interactions, even if there is no __additional__ effect of having both youth justice and child welfare contact
+
+---
+# Problem: interactions
+
+
+
+```r
+library(tidyverse)
+
+# say we have four independent variables which each
+# increase the log-odds of the outcome by 1, but
+# our two groups have very different baseline log-odds (i.e. intercepts)
+
+vals &lt;- seq(-4, by = 1, length.out = 5)
+vals2 &lt;-  seq(-1, by = 1, length.out = 5)
+
+# turn the log-odds into probabilities
+
+df &lt;- 
+tibble(
+  n_risk_factors = list(c("0", "1", "2", "3", "4")),
+  logit_x = list(vals, vals2),
+  condition = list("low baseline", "high baseline")
+  ) %&gt;% 
+  unnest() %&gt;% 
+  mutate(prob_y = boot::inv.logit(logit_x))
+```
+
+
+---
+# Problem: interactions
+
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/logit_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
+
+
+---
+# Problem: interactions
+- To account for this cumulative effect of transforming our results into probabilities, we __compare__ the estimated probabilities from our intersectional model to a model which __has all the fixed effects but doesn't have our intersectional random effect__
+- This comparison gives us an estimate __additional__ difference in the effect of our intersectional random effect compared to a simpler model without the random effects
+- (A question for you: does this even make sense!?)
+
+
 
 ---
 # In review
 - We want to fit a model with __lots of interactions__ and which helps us understand __variation in our outcome__ between people with the same observables
 - We can do this by fitting our interactions as a level in a __multilevel model__ and by interpreting the model through __Marginal Effects at Representative values__ to get a distribution of outcomes for people with a given set of characteristics
+
 
 
 ---
@@ -363,12 +319,14 @@ class: center, middle, inverse
 
 # Research background
 1. How do __childhood experiences__ affect __adult convictions__ histories?
+2. Adult convictions patterns are __hetergeneous__, and so we often summaries them as a set of __discrete trajectories__ with different shapes
 2. Key insight one: childhood experiences affect adult convictions __cumulatively__. Our focus is on 'Crossover children' [(Baidawi, 2020:280)](https://www.tandfonline.com/doi/full/10.1080/0312407X.2019.1686765) who are involved with both youth justice __and__ child projection
 3. Key insight two: the ways in which childhood experiences shape adult outcomes may __vary by both sex and race/ethnicity__ [(Broidy et al. 2015:145)](https://link.springer.com/article/10.1007/s40865-015-0008-z)
 
 ---
 # Research question
 - How do the __cumulative__ effects of youth justice and child welfare contact on adult convictions trajectories __vary by sex and race/ethnicity__?
+- Is there are a specific __additional association__ with adult convictions trajectory of having contact with youth justice __and__ child welfare?
 
 ---
 # Data
@@ -408,18 +366,6 @@ class: my-one-page-font
    &lt;td style="text-align:right;"&gt; 79.80 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Indigenous Status (IS) &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Indigenous (ever) &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 4821 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.06 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Non-Indigenous &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 78541 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.94 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Sex &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; Female &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 40416 &lt;/td&gt;
@@ -432,34 +378,40 @@ class: my-one-page-font
    &lt;td style="text-align:right;"&gt; 0.52 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Police Diversion &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 9264 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.11 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Indigenous Status &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Indigenous &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4821 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.06 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Abuse/Neglect &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3515 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Non-indigenous &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 78541 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.94 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Youth Justice Charge &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3306 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Child Welfare/Youth Justice &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 71232 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.85 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; OOHC Placement &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 784 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2048 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.02 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Youth Detention &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 469 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8528 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1554 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.02 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Total &lt;/td&gt;
@@ -505,16 +457,13 @@ class: center, middle, inverse
 # Estimated conviction trajectories
 &lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/y18_trajectories.png" width="78%" style="display: block; margin: auto;" /&gt;
 
----
-
-
 
 ---
 
 # Conviction trajectory probabilities
 
-&lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/esc_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
-
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/main/docs/figures/esc_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
+https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/base_plot.png
 
 ---
 
@@ -529,8 +478,8 @@ class: center, middle, inverse
 # Concluding thoughts
 - This is a first step: from this model we can derive __other quantities of interest__
 - What does IS measure here? Must __avoid deficit interpretation__ [(Walter and Andersen 2013)](https://www.taylorfrancis.com/books/e/9781315426570)
+- I wonder if this project has too many moving parts - does this make coherent sense?
 - Of the two aspects of quantitative intersectionality, I think taking the variation in the outcome seriously has made more of an impression on me
-
 
 
 ---
@@ -568,11 +517,6 @@ name: bonus
 class: center, middle, inverse
 
 # Bonus slides
-
-
----
-# Prevalence of independent variables by sex and IS
-&lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/iv_proportions.png" width="50%" style="display: block; margin: auto;" /&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
