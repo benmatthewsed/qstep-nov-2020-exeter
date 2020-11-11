@@ -54,6 +54,44 @@ Q-Step Exeter, 2020-11-11
 2. Methodology: Multilevel models for quantitative intersectionality
 3. Our study: Exploring inequalities in the impact of childhood system contact on adult criminal conviction trajectories by sex and Indigenous status
 
+
+
+---
+class: center, middle, inverse
+
+# Part One: Our study
+
+
+
+---
+
+# Research background
+1. How do __childhood experiences__ affect __adult convictions__ histories?
+2. Adult convictions patterns are __heterogeneous__, and so we often summaries them as a set of __discrete trajectories__ with different shapes
+3. Key insight one: childhood experiences affect adult convictions __cumulatively__. Our focus is on 'Crossover children' [(Baidawi, 2020:280)](https://www.tandfonline.com/doi/full/10.1080/0312407X.2019.1686765) who are involved with both youth justice __and__ child projection, and are expect to have an __extra__ disbenefit in criminal careers from being in contact with both systems
+4. Key insight two: the ways in which childhood experiences shape adult outcomes may __vary by both sex and race/ethnicity__ [(Broidy et al. 2015:145)](https://link.springer.com/article/10.1007/s40865-015-0008-z)
+
+---
+# Summarising criminal careers
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/dunger_figure.png" width="78%" style="display: block; margin: auto;" /&gt;
+
+_D’Unger et al. (1998), How Many Latent Classes of Delinquent/Criminal Careers? Results from Mixed Poisson Regression Analyses, American Journal of Sociology, Vol. 103, No. 6, pp. 1593-1630_
+
+
+---
+# Intersectionality and criminal careers
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/broidy_quote.png" width="78%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+# Research questions
+- How do the __cumulative__ effects of youth justice and child welfare contact on adult convictions trajectories __vary by sex and race/ethnicity__?
+- Is there are a specific __additional association__ with adult convictions trajectory of having contact with youth justice __and__ child welfare?
+
+
+
+
 ---
 class: center, middle, inverse
 
@@ -163,11 +201,10 @@ tibble(
 
 ---
 # Curse of dimensionality
-
 &lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/yj_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
+
 ---
 # Curse of dimensionality
-
 &lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/both_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
 
 ---
@@ -251,11 +288,12 @@ class: center, middle, inverse
 - Decide what combinations of independent variables we're interested in (i.e., pick our representative values), use the model to estimate outcomes for people with that combination of independent variables (see also King et al. 2000)
 - These predictions incorporate the effects of all our interactions - that is, the levels of our 'multilevel' model - as well as the main effects of these variables
 - For categorical models we get a distribution of outcomes across the categories of our outcome - just what we want!
-- We can still look at parameter estimates to see if specific interactions are important, but...
+- We can still look at parameter estimates to see if specific interactions are important, but see the warning on the previous slide!
 
 ---
 # Problem: interactions
-- The our MERs are __collapsible__: the amount your probability changes from a change in the presence of an independent variable depends on your probability in the absence of the independent variable
+- We still have a problem in understanding cumulative effects though!
+- Our MERs are __collapsible__: the amount your probability changes from a change in the presence of an independent variable depends on your probability in the absence of the independent variable
 - So the using predictive MERs incorporates both the interactions from our intersectional random effect, but also [__mathematical__, not subject-matter-relevant, interactions](https://www.fharrell.com/post/marg/) as a consequence of converting parameter estimates from the log-odds to the probability scale
 - And so on the probability scale we could find __cumulative__ effects of having multiple independent variables because of these __mathematical__ interactions, even if there is no __additional__ effect of having both youth justice and child welfare contact
 
@@ -294,7 +332,7 @@ tibble(
 
 
 ---
-# Problem: interactions
+# (Possible) solutions: compare predictions across models
 - To account for this cumulative effect of transforming our results into probabilities, we __compare__ the estimated probabilities from our intersectional model to a model which __has all the fixed effects but doesn't have our intersectional random effect__
 - This comparison gives us an estimate __additional__ difference in the effect of our intersectional random effect compared to a simpler model without the random effects
 - (A question for you: does this even make sense!?)
@@ -305,28 +343,6 @@ tibble(
 # In review
 - We want to fit a model with __lots of interactions__ and which helps us understand __variation in our outcome__ between people with the same observables
 - We can do this by fitting our interactions as a level in a __multilevel model__ and by interpreting the model through __Marginal Effects at Representative values__ to get a distribution of outcomes for people with a given set of characteristics
-
-
-
----
-class: center, middle, inverse
-
-# Part Three: Our study
-
-
-
----
-
-# Research background
-1. How do __childhood experiences__ affect __adult convictions__ histories?
-2. Adult convictions patterns are __heterogeneous__, and so we often summaries them as a set of __discrete trajectories__ with different shapes
-2. Key insight one: childhood experiences affect adult convictions __cumulatively__. Our focus is on 'Crossover children' [(Baidawi, 2020:280)](https://www.tandfonline.com/doi/full/10.1080/0312407X.2019.1686765) who are involved with both youth justice __and__ child projection
-3. Key insight two: the ways in which childhood experiences shape adult outcomes may __vary by both sex and race/ethnicity__ [(Broidy et al. 2015:145)](https://link.springer.com/article/10.1007/s40865-015-0008-z)
-
----
-# Research question
-- How do the __cumulative__ effects of youth justice and child welfare contact on adult convictions trajectories __vary by sex and race/ethnicity__?
-- Is there are a specific __additional association__ with adult convictions trajectory of having contact with youth justice __and__ child welfare?
 
 ---
 # Data
@@ -444,7 +460,7 @@ _Nagin and Land (1993:346) Age, Criminal Careers, and Population Heterogeneity: 
 - Latent Class Growth Curves (LCGM, Nagin and Land 1993, also known as Semi-Parametric Group-Based Modelling or Group-Based Trajectory Modelling... or as a specific case of Latent Class Mixed Models with no random effect... or as a specific case of Growth Mixture Models with no within-class variance), __makes groups out of data__ based on a repeated measures dependent variable
 - Each group gets a trajectory (in our case, probability of conviction in a given year)
 - LCGMs are very popular (if divisive) in criminology (Nagin and Land 2005a, 2005b; Sampson and Laub 2005)
-
+- Can give you a categorical output (trajectory membership) that you can then analyse as outcome in a regression model
 
 
 ---
@@ -557,7 +573,7 @@ class: center, middle, inverse
 - I like that it's exploratory - but you have to bear in mind that no 'significant' effect doesn't mean that no effect - it may just be that estimates were very aggressively shrunk towards zero
 - "Absence of evidence is not evidence of absence"
 - In the multinomial case it's a bit of a pain though
-- Even though I've talked about it less today I think emphasising the variation in outcomes for people with the same observables has had a more profound impact on me (see also [this](http://nautil.us/issue/92/frontiers/how-eugenics-shaped-statistics))
+- Even though I've talked about it less today I think emphasising the variation in outcomes for people with the same observables has had a more profound impact on how I think about quantitative modelling (see also [this](http://nautil.us/issue/92/frontiers/how-eugenics-shaped-statistics))
 - If you take anything from this talk please go and read McCall (2005)
 
 ---
