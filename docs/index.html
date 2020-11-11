@@ -114,7 +114,7 @@ class: center, middle, inverse
 ---
 
 # What is intersectionality?
-- The idea has a complex history [(McCall 2005)](https://lsa.umich.edu/content/dam/ncid-assets/ncid-documents/Ten%20Diversity%20Scholarship%20Resources/McCall%20(2005)%20The%20Complex%20of%20Intersectionality%20.pdf), but as a term was popularized by [Kimberlé Crenshaw (1989)](https://chicagounbound.uchicago.edu/cgi/viewcontent.cgi?article=1052&amp;context=uclf)
+- The idea has a complex history [(McCall 2005)](https://www.jstor.org/stable/10.1086/426800?seq=1#metadata_info_tab_contents), but as a term was popularized by [Kimberlé Crenshaw (1989)](https://chicagounbound.uchicago.edu/cgi/viewcontent.cgi?article=1052&amp;context=uclf)
 - The [Wikipedia](https://en.wikipedia.org/wiki/Intersectionality) definition is: "a theoretical framework for understanding how __aspects of a person's social and political identities... combine__ to create different modes of discrimination and privilege. Intersectionality identifies advantages and disadvantages that are felt by people due to a combination of factors."
 
 
@@ -122,7 +122,7 @@ class: center, middle, inverse
 
 # What is intersectionality?
 - Analytically, "intersectionality" covers researchers in different theoretical traditions and with different research methods
-- [Lesley McCall (2005)](https://lsa.umich.edu/content/dam/ncid-assets/ncid-documents/Ten%20Diversity%20Scholarship%20Resources/McCall%20(2005)%20The%20Complex%20of%20Intersectionality%20.pdf) talks about __three broad kinds__ of intersectional "complexity":
+- [Lesley McCall (2005)](https://www.jstor.org/stable/10.1086/426800?seq=1#metadata_info_tab_contents) talks about __three broad kinds__ of intersectional "complexity":
   - Anticategorical - __deconstructs__ analytical categories
   - Intracategorical - focuses on particular social groups at __neglected points of intersection__ to reveal the complexity of lived experience
   - Intercategorical - provisionally adopt existing analytical categories to __document relationships of inequality__ among social groups and changing configurations of inequality
@@ -258,11 +258,11 @@ Here the data are __unbalanced__, so we have more people in some groups than oth
 ---
 class: center, middle, inverse
 
-# _Technical interlude_
+# _Intermezzo_
 
   
 ---
-# Technical interlude
+# Fit these models with Bayes
 - Okay we're really getting technical here but I __think__ there's also a difference here in how you'd understand what a multilevel model _is_ between Frequentist and Bayesian senses - the TLDR is that a Frequentist approach treats the 'levels' in a multilevel model as part of the model's error term (and so ["integrates them out of the likelihood"](https://discourse.mc-stan.org/t/hierarchical-linear-models-bayes-vs-frequentist/12012/2)) - and the error term is by definition what you're __not__ modelling. 
 - Whereas for Bayes these extra levels are (hyper-)parameters that you estimate directly
 - The upshot is that I think you only get __uncertainty estimates__ for all your interaction terms in the multilevel specification with __Bayes__, and so this is the recommended approach
@@ -284,7 +284,7 @@ class: center, middle, inverse
 
 ---
 # Solution: prediction for inference
-- Use Average Predictive Comparisons (Gelman and Pardoe 2007) Specifically, in our case we used __Marginal Effects at Representative values__ (MERs)
+- Use Average Predictive Comparisons [(Gelman and Pardoe 2007)](http://www.stat.columbia.edu/~gelman/research/published/ape17.pdf) Specifically, in our case we used __Marginal Effects at Representative values__ (MERs)
 - Decide what combinations of independent variables we're interested in (i.e., pick our representative values), use the model to __estimate outcomes for people with that combination of independent variables__ [(see also King et al. 2000)](https://gking.harvard.edu/files/abs/making-abs.shtml)
 - These predictions __incorporate the effects of all our interactions__ - that is, the levels of our 'multilevel' model - as well as the main effects of these variables
 - For categorical models we get a __distribution of outcomes__ across the categories of our outcome - just what we want!
@@ -292,9 +292,9 @@ class: center, middle, inverse
 
 ---
 # Problem: interactions
-- We still have a problem in understanding cumulative effects though!
+- We still have another, sutble, problem in understanding cumulative effects though!
 - Our MERs are __collapsible__: the amount your probability changes from a change in the presence of an independent variable depends on your probability in the absence of the independent variable
-- So the using predictive MERs incorporates both the interactions from our intersectional random effect, but __also__ [__mathematical__, not subject-matter-relevant, interactions](https://www.fharrell.com/post/marg/) as a consequence of converting parameter estimates from the __log-odds to the probability scale__
+- So the using predictive MERs incorporates both the interactions from our intersectional random effect, but __also__ [__mathematical__, not subject-matter-relevant, interactions (Harrell, 2020)](https://www.fharrell.com/post/marg/) as a consequence of converting parameter estimates from the __log-odds to the probability scale__
 - And so on the probability scale we could/will find __cumulative__ effects of having multiple childhood system contacts because of these __mathematical__ interactions, even if there is no __additional__ effect of having both youth justice and child welfare contact
 
 ---
@@ -545,38 +545,46 @@ class: center, middle, inverse
 # Difference in estimated trajectories
 &lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/docs/figures/20201110-difference_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
 
+---
+name: discussion
+class: center, middle, inverse
+
+# Discussion
 
 
 ---
 
 # Discussion
 - Childhood experiences' relationships with the probability of adult convictions trajectories __do seem to differ by sex and Indigenous status__:
-   - Non-IS men and women have the largest decrease in probability of no/low class membership in presence of all childhood contacts
-   - In contrast IS men have the smallest decrease in probability of no/low class membership in presence of all childhood contacts
-- This is partly because of __'floor effects'__
+   - Non-Indigenous Status men and women have the largest decrease in probability of no/low class membership in presence of all childhood contacts
+   - In contrast Indigenous Status men have the smallest decrease in probability of no/low trajectory membership in presence of all childhood contacts
 - … but the __cumulative effect__ of these risk factors leads to __similar outcomes by sex`*`IS__, despite the very __different baselines__ by sex and IS
 
 ---
 # Discussion
--	There was an additional cross-over effect for non-IS women in the low-level Early trajectory, but not much for other trajectories or groups
--	Possible explanations: N-IS women in contact with both systems have (on average) worse circumstances for things we don’t measure? Particularly strong effect of labelling by both systems for Non-IS women? Mathematically, we see these bigger effects for Non-IS women because their intercept in the model (when they have no contact with any system) is very, very low, in the part of the distribution where converting log-odds to probabilities has an outsized effect?
-- We see a lot of variation in estimated trajectories for people with the same observable characteristics. This reflects both things we haven’t included in the model, but also people’s differential responses to these childhood experiences (including possibly resilience for some people mitigating the effects of these experiences)
+-	There was an __additional cross-over effect__ for Non-Indigenous Status women in the Low/Declining trajectory, but not much for other trajectories or groups
+-	Possible explanations:
+  - Non-Indigenous Status women in contact with both systems have (on average) worse circumstances for things we don’t measure? 
+  - Particularly strong effect of labelling by both systems for Non-IS women? 
+   - Mathematically, we see these bigger effects for Non-Indigenous Status women because their intercept in the model (when they have no contact with any system) is very, very low, in the part of the distribution where converting log-odds to probabilities has an outsized effect?
+- We see a __lot of variation__ in estimated trajectories for people with the same observable characteristics. This reflects both things we haven’t included in the model, but also people’s differential responses to these childhood experiences
 
 ---
 # Concluding thoughts
 
-- This particular way of quantitatively modelling 'intersectionality' seems pretty good!
-- I like that it's exploratory - but you have to bear in mind that no 'significant' effect doesn't mean that no effect - it may just be that estimates were very aggressively shrunk towards zero
-- "Absence of evidence is not evidence of absence"
-- In the multinomial case it's a bit of a pain though
-- Even though I've talked about it less today I think emphasising the variation in outcomes for people with the same observables has had a more profound impact on how I think about quantitative modelling (see also [this](http://nautil.us/issue/92/frontiers/how-eugenics-shaped-statistics))
-- If you take anything from this talk please go and read McCall (2005)
+- This particular way of quantitatively modelling 'intersectionality' with multilevel models seems pretty good!
+- I like that it's __exploratory__ - but you have to bear in mind that no 'significant' effect doesn't mean that no effect - it may just be that estimates were very aggressively shrunk towards zero ("Absence of evidence is not evidence of absence" and all that)
+- If we had a more informed theoretical background perhaps we would have used a [more bespoke model](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models) to look for interactions and do this shrinkage?
+- In the __multinomial__ case it's a bit of a pain though!
+
+
 
 ---
 # Concluding thoughts
 - What does IS measure here? Must __avoid deficit interpretation__ [(Walter and Andersen 2013)](https://www.taylorfrancis.com/books/e/9781315426570)
 - Same with sex/gender!
-- I wonder if this project has too many moving parts - does this make sense?
+- Even though I've talked about it less today I think emphasising the variation in outcomes for people with the same observables has had a more profound impact on how I think about quantitative modelling (see also [this](http://nautil.us/issue/92/frontiers/how-eugenics-shaped-statistics))
+- If you take anything from this talk please go and read [McCall (2005)](https://www.jstor.org/stable/10.1086/426800?seq=1#metadata_info_tab_contents)
 
 
 
@@ -609,12 +617,6 @@ Q-Step Exeter, 2020-11-11
 ]
 
 `@benmatthewsed` | `@U_Inequalities`
-
----
-name: bonus
-class: center, middle, inverse
-
-# Bonus slides
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
