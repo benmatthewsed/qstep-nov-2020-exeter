@@ -434,7 +434,7 @@ Three steps:
 ---
 # Latent Class Growth Curves
 
-&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/nagin_land_quote.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/nagin_land_quote.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 _Nagin and Land (1993:346) Age, Criminal Careers, and Population Heterogeneity: Specification and Estimation of a Nonparametric, Mixed Poisson Model, Criminology, Vol. 31, No. 3, pp. 327:362_
 
@@ -460,14 +460,73 @@ class: center, middle, inverse
 
 
 ---
-# Conviction trajectory probabilities
-&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/docs/figures/20201109-step_preds_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
+# Regression model fit
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; model_names &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; model_formulas &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; elpd_diff &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; se_diff &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Intersectional &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; category ~ sex * IS + any_cw + any_yj + (1 | stratum) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Intersectional (extra interaction) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; category ~ sex * IS + any_cw * any_yj + (1 | stratum) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -1.5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Fixed effects (interaction) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; category ~ sex * IS + any_cw * any_yj &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -56.6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 11.1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Fixed effectes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; category ~ sex * IS + any_cw + any_yj &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -58.1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 11.4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Sex and IS only &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; category ~ sex * IS &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -3211.2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 88.9 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Intercept only &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; category ~ 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -7706.0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 130.0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+# Parameter estimates: fixed effects
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/docs/figures/20201109-full_model_fixed_params.png" width="78%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 # Interactions parameters
 &lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/docs/figures/20201110-interaction_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
 
+
+
+
+---
+# Conviction trajectory probabilities
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/docs/figures/20201109-step_preds_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
 
 
 ---
