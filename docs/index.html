@@ -71,10 +71,24 @@ class: center, middle, inverse
 3. Key insight one: childhood experiences affect adult convictions __cumulatively__. Our focus is on 'Crossover children' [(Baidawi, 2020:280)](https://www.tandfonline.com/doi/full/10.1080/0312407X.2019.1686765) who are involved with both youth justice __and__ child projection, and are expect to have an __extra__ disbenefit in criminal careers from being in contact with both systems
 4. Key insight two: the ways in which childhood experiences shape adult outcomes may __vary by both sex and race/ethnicity__ [(Broidy et al. 2015:145)](https://link.springer.com/article/10.1007/s40865-015-0008-z)
 
+
+---
+# Summarising criminal careers
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/nagin_land_quote.png" width="80%" style="display: block; margin: auto;" /&gt;
+_Nagin and Land (1993:346) Age, Criminal Careers, and Population Heterogeneity: Specification and Estimation of a Nonparametric, Mixed Poisson Model, Criminology, Vol. 31, No. 3, pp. 327:362_
+
+---
+# Latent Class Growth Curves
+- Latent Class Growth curves Models* (LCGM, [Nagin and Land 1993](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1745-9125.1993.tb01133.x) __make groups out of data__ based on a repeated measures dependent variable
+- The data are split up into distinct __groups__ which each have their __own trajectories__ (in our case, probability of conviction in a given year)
+- LCGMs are very popular (if divisive) in criminology [(Sampson and Laub 2005)](https://scholar.harvard.edu/files/sampson/files/2005_crim_laub.pdf)
+- Can give you a __categorical output__ (i.e. trajectory membership) for each person in the data that you can then analyse as outcome in a regression model
+- You also get the probability that they belong to each trajectory
+
+
 ---
 # Summarising criminal careers
 &lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/dunger_figure.png" width="78%" style="display: block; margin: auto;" /&gt;
-
 _D’Unger et al. (1998), How Many Latent Classes of Delinquent/Criminal Careers? Results from Mixed Poisson Regression Analyses, American Journal of Sociology, Vol. 103, No. 6, pp. 1593-1630_
 
 
@@ -91,46 +105,45 @@ _D’Unger et al. (1998), How Many Latent Classes of Delinquent/Criminal Careers
 
 
 
-
 ---
 class: center, middle, inverse
 
-# Conceptual background: Quantiative intersectionality
+# Methods: Quantiative intersectionality
 
 
 ---
 
 # What is intersectionality?
-- Coined by Kimberlé Crenshaw, the [Wikipedia](https://en.wikipedia.org/wiki/Intersectionality) (therefore correct) definition is: "a theoretical framework for understanding how aspects of a person's social and political identities... combine to create different modes of discrimination and privilege. Intersectionality identifies advantages and disadvantages that are felt by people due to a combination of factors."
-- (As we're in 2020 exactly what "intersectionality" _means_ is [also part of the culture wars](https://www.vox.com/the-highlight/2019/5/20/18542843/intersectionality-conservatism-law-race-gender-discrimination)...)
+- The idea has a complex history [(McCall 2005)](https://lsa.umich.edu/content/dam/ncid-assets/ncid-documents/Ten%20Diversity%20Scholarship%20Resources/McCall%20(2005)%20The%20Complex%20of%20Intersectionality%20.pdf), but as a term was popularized by [Kimberlé Crenshaw (1989)](https://chicagounbound.uchicago.edu/cgi/viewcontent.cgi?article=1052&amp;context=uclf)
+- The [Wikipedia](https://en.wikipedia.org/wiki/Intersectionality) definition is: "a theoretical framework for understanding how __aspects of a person's social and political identities... combine__ to create different modes of discrimination and privilege. Intersectionality identifies advantages and disadvantages that are felt by people due to a combination of factors."
+
 
 ---
 
 # What is intersectionality?
 - Analytically, "intersectionality" covers researchers in different theoretical traditions and with different research methods
-- Lesley McCall (2005) talks about three broad kinds of intersectional "complexity":
-  - Anticategorical - "deconstructs analytical categories"
-  - Intracategorical - "focus on particular social groups at neglected points of intersection... in order to reveal the complexity of lived experience"
-  - Intercategorical - "provisionally adopt existing analytical categories to document relationships of inequality among social groups and changing configurations of inequality"
-- Each of these archetypal approaches has its own typical set of methods. Quantitative studies of intersectionality are typically doing __intercategorical__ research
+- [Lesley McCall (2005)](https://lsa.umich.edu/content/dam/ncid-assets/ncid-documents/Ten%20Diversity%20Scholarship%20Resources/McCall%20(2005)%20The%20Complex%20of%20Intersectionality%20.pdf) talks about __three broad kinds__ of intersectional "complexity":
+  - Anticategorical - __deconstructs__ analytical categories
+  - Intracategorical - focuses on particular social groups at __neglected points of intersection__ to reveal the complexity of lived experience
+  - Intercategorical - provisionally adopt existing analytical categories to __document relationships of inequality__ among social groups and changing configurations of inequality
+- Each of these archetypal approaches has its own typical set of methods. __Quantitative__ studies of intersectionality are typically doing __intercategorical__ research
 
 
 
 
 ---
 # Quantiative intersectionality
-
-- (NB this is a partial introduction - my route in was through epidemiology, though McCall herself is a sociologist and political scientist)
-- So far as I can tell, quantitative intersectionality two main methodological components:
-  1. Fits (often quite complicated) models with _interactions_ between the effects of different independent variables (so, social characteristics) and the outcome
-  2. Wants to avoid essentializing social groups by accounting for _variation_ in outcomes rather than just average outcomes _for people with the same observable characteristics_
-- Juan Merlo calls this combination "Multilevel Analysis of Individual Heterogeneity and Discriminatory Accuracy" (MAIHDA)
+- (NB this is only a partial introduction - my route in was through epidemiology, though McCall herself is a sociologist and political scientist. Sorry if I miss anything important!)
+- So far as I can tell, quantitative intersectionality __two main methodological components__:
+  1. Fits (often quite complicated) models with __interactions__ between the effects of different independent variables (so, social characteristics) and the outcome
+  2. Wants to avoid essentializing social groups by accounting for __variation__ in outcomes rather than just average outcomes __for people with the same observable characteristics__
+- Juan Merlo calls this combination ["Multilevel Analysis of Individual Heterogeneity and Discriminatory Accuracy" (MAIHDA)](https://www.sciencedirect.com/science/article/pii/S0277953617307566?via%3Dihub)
 
 
 ---
 class: center, middle, inverse, my-one-page-font
 
-# Intersectionality and interactions
+# Part One: Intersectionality and interactions
 
 ---
 
@@ -139,12 +152,10 @@ class: center, middle, inverse, my-one-page-font
 - Why do we need a fancy multilevel model for this?
 - Lots of interactions means lots of significance tests, and so problems with __multiple testing__ - we'd [get some statistically significant results by chance](https://psycnet.apa.org/fulltext/2019-30571-005.html)
 - Also, adding too many interaction effects in a standard regression model creates problems because of the __'curse of dimensionality'__
-- Every extra (categorical) variable in the interaction splits the sample up further and further, making estimates unreliable as interactions for many combinations of variables are based on increasingly small amounts of data
+- Every extra (categorical) variable in the interaction __splits the sample up further and further__, making estimates unreliable as interactions for many combinations of variables are based on increasingly small amounts of data
 
 ---
-# Curse of dimensionality
-
-.pull-left[
+# Curse of dimensionality: worked example
 
 ```r
 library(tidyverse)
@@ -155,17 +166,10 @@ set.seed(
 
 n &lt;- 80000
 ```
-]
-
-
-.pull-right[
-
-]
 
 
 ---
-# Curse of dimensionality
-
+# Curse of dimensionality: worked example
 
 ```r
 df &lt;- 
@@ -194,8 +198,7 @@ tibble(
 ```
 
 ---
-# Curse of dimensionality
-
+# Curse of dimensionality: worked example
 &lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/base_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
 
 
@@ -208,22 +211,20 @@ tibble(
 &lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/both_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
 
 ---
-
 # Interactions, bias and variance
 - So how to resolve this?
 - Conceptually, we want the model to find interactions __if there's enough data to support them__, but if there isn't enough data for a given combination of variables we want the model to be __sceptical__ about estimating a huge interaction effects and move its estimate towards zero
 - In the stats lingo, we're trading off [bias for variance](https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff)
 - We want to make our model actually fit the data in our dataset __worse__ (i.e. add bias) by making it __less sensitive to extreme values__ of these interaction effects when there isn't a lot of data to support them
-- (Yes, making the model fit your data worse is __very unintuitive__/sounds completely bonkers. I looked for a simple explainer online and there wasn't one I could find. [Andrew Gelman describes it like this](https://statmodeling.stat.columbia.edu/2011/10/15/the-bias-variance-tradeoff/): "The basic idea is as follows: if you’re estimating something, you can slice your data finer and finer... each time getting a purer—and less biased—estimate. But each subdivision... reduces your sample size... hence the variance of your estimate goes up.")
-
 
 ---
 # Scepticism through shrinkage
 - __Multilevel models__ are one way to let us be a bit __sceptical__ of extremely large effects for parameters when there isn't a lot of data
 - They do this by __'pooling' information__/'borrowing strength'/'shrinking' estimates across clusters
 - Often these clusters are schools or hospitals or courts, in this case our clusters are combinations of independent variables (i.e. our interactions)
-- This is because in the multilevel model assumes that clusters are __drawn from a Normal distribution__, making it sceptical of extreme values
+- This is because the multilevel model assumes that clusters are __drawn from a Normal distribution__, making it sceptical of extreme values
 - Importantly for us, the model figures out how much information should be pooled __based on the data itself__: as [Michael Clark says](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models): "Data nuances will determine the relative amount of ‘strength borrowed’, but in general, [multilevel] models provide a good way for the __data to speak for itself when it should, and reflect an ‘average’ when there is little information__."
+- See also the [Bell and colleagues paper (2019)](https://psycnet.apa.org/fulltext/2019-30571-005.html) on this point
 
 ---
 # What shrinkage looks like
@@ -239,21 +240,20 @@ From [Michael Clark's excellent blog post](https://m-clark.github.io/posts/2019-
 ---
 # What shrinkage looks like
 .left-column[
-Here the data are unbalanced, so we have more people in some groups than others; estimates from the smaller groups get shrunk more towards the average effect.
+Here the data are __unbalanced__, so we have more people in some groups than others; estimates from the smaller groups get shrunk more towards the average effect.
 ]
 
 .right-column[
-
 &lt;img src="https://m-clark.github.io/img/shrinkage/unbalanced.gif" width="80%" /&gt;
 ]
 
 ---
-# Why a "multilevel" approach? Other factors
-- People like Intra-class Correlation Coefficient as a measure for how much ["global" 'intersectionality'](https://psycnet.apa.org/fulltext/2019-30571-005.html) there is in the model
-- ... but you don't have to use a multilevel model though! There are also other methods of doing this regularization: 
+# Other approaches
+- You don't have to use a multilevel model though! There are also __other methods__ of doing this regularization: 
   - Penalized regression (see discussion between [Lizotte and colleagues (2020)](https://www.sciencedirect.com/science/article/pii/S0277953619304939) and [Evans et al. (2020)](https://www.sciencedirect.com/science/article/pii/S0277953619304927#bib14))
   - ['Sceptical priors' in a Bayesian model](https://www.fharrell.com/post/journey/)
-- This is me speculating, but in general people in the social sciences who are doing this kind of work are pretty familiar with multilevel models (at least, more so than some of the other approaches?), and you can fit them with reasonably standard software which makes it more approachable
+- The important thing I think is the __conceptual__ framing: we think the social world is complex so we want to fit a complicated statistical model, but we also want a mechanism to stop overfitting to small strata
+- The multilevel model __balances__ these two concerns, [although it's not magic (Bell et al. 2019)](https://psycnet.apa.org/fulltext/2019-30571-005.html)
   
 ---
 class: center, middle, inverse
@@ -279,27 +279,26 @@ class: center, middle, inverse
 ---
 # Variation in outcomes
 - What about the describing variation in the outcome?
-- We want to avoid the ["Tyranny of the averages"](https://www.sciencedirect.com/science/article/pii/S0277953617307566?via%3Dihub#sec5) - assuming that everyone with the same characteristics has the same relationship between a 'risk factor' and the outcome we're interested in
-- For non-linear models we also have the general problem that any parameter estimate is "extraordinarily hard to interpret" in isolation because the effects of every variable are _already_ conditional on the values of other variables (McElreath)
+- We want to __avoid the ["Tyranny of the averages"](https://www.sciencedirect.com/science/article/pii/S0277953617307566?via%3Dihub#sec5)__: assuming that everyone with the same characteristics has the same relationship between a 'risk factor' and the outcome we're interested in
+- For __non-linear models__ we also have the general problem that any parameter estimate is "extraordinarily hard to interpret" in isolation because the effects of every variable are _already_ conditional on the values of other variables [(McElreath, 2016)](https://github.com/rmcelreath/statrethinking_winter2019)
 
 ---
 # Solution: prediction for inference
 - Use Average Predictive Comparisons (Gelman and Pardoe 2007) Specifically, in our case we used __Marginal Effects at Representative values__ (MERs)
-- Decide what combinations of independent variables we're interested in (i.e., pick our representative values), use the model to estimate outcomes for people with that combination of independent variables (see also King et al. 2000)
-- These predictions incorporate the effects of all our interactions - that is, the levels of our 'multilevel' model - as well as the main effects of these variables
-- For categorical models we get a distribution of outcomes across the categories of our outcome - just what we want!
-- We can still look at parameter estimates to see if specific interactions are important, but see the warning on the previous slide!
+- Decide what combinations of independent variables we're interested in (i.e., pick our representative values), use the model to __estimate outcomes for people with that combination of independent variables__ [(see also King et al. 2000)](https://gking.harvard.edu/files/abs/making-abs.shtml)
+- These predictions __incorporate the effects of all our interactions__ - that is, the levels of our 'multilevel' model - as well as the main effects of these variables
+- For categorical models we get a __distribution of outcomes__ across the categories of our outcome - just what we want!
+- We can still look at parameter estimates for interaction terms to see if specific interactions are important... but see the warning on the previous slide!
 
 ---
 # Problem: interactions
 - We still have a problem in understanding cumulative effects though!
 - Our MERs are __collapsible__: the amount your probability changes from a change in the presence of an independent variable depends on your probability in the absence of the independent variable
-- So the using predictive MERs incorporates both the interactions from our intersectional random effect, but also [__mathematical__, not subject-matter-relevant, interactions](https://www.fharrell.com/post/marg/) as a consequence of converting parameter estimates from the log-odds to the probability scale
-- And so on the probability scale we could find __cumulative__ effects of having multiple independent variables because of these __mathematical__ interactions, even if there is no __additional__ effect of having both youth justice and child welfare contact
+- So the using predictive MERs incorporates both the interactions from our intersectional random effect, but __also__ [__mathematical__, not subject-matter-relevant, interactions](https://www.fharrell.com/post/marg/) as a consequence of converting parameter estimates from the __log-odds to the probability scale__
+- And so on the probability scale we could/will find __cumulative__ effects of having multiple childhood system contacts because of these __mathematical__ interactions, even if there is no __additional__ effect of having both youth justice and child welfare contact
 
 ---
 # Problem: interactions
-
 
 
 ```r
@@ -333,16 +332,28 @@ tibble(
 
 ---
 # (Possible) solutions: compare predictions across models
-- To account for this cumulative effect of transforming our results into probabilities, we __compare__ the estimated probabilities from our intersectional model to a model which __has all the fixed effects but doesn't have our intersectional random effect__
+- To account for this cumulative effect of transforming our results into probabilities, we can __compare__ the estimated probabilities from our intersectional model to a model which __has all the fixed effects but doesn't have our intersectional random effect__
 - This comparison gives us an estimate __additional__ difference in the effect of our intersectional random effect compared to a simpler model without the random effects
-- (A question for you: does this even make sense!?)
-
 
 
 ---
+name: review
+class: center, middle, inverse
+
+# A quick review
+
+---
 # In review
+- We want to see how the __cumulative effects__ of contact with child welfare and youth justice on adult convictions trajectories __vary by sex and Indigenous status__
+- And to see if there are particular extra effects of having contact with both child welfare and youth justice
 - We want to fit a model with __lots of interactions__ and which helps us understand __variation in our outcome__ between people with the same observables
 - We can do this by fitting our interactions as a level in a __multilevel model__ and by interpreting the model through __Marginal Effects at Representative values__ to get a distribution of outcomes for people with a given set of characteristics
+
+---
+name: our-study
+class: center, middle, inverse
+
+# Our study
 
 ---
 # Data
@@ -446,21 +457,6 @@ Three steps:
 1. Make __convictions trajectory groups__ with Latent Class Growth Curves [(Nagin and Land 1993)](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1745-9125.1993.tb01133.x)
 2. Fit intersectional [(Bell et al. 2019)](https://psycnet.apa.org/fulltext/2019-30571-005.html) multinomial logistic regression model to __estimate associations__ between youth justice and child welfare __system contact and adult convictions class__
 3. Interpret model results through __estimated probability of convictions class membership__, conditional different configurations of our independent variables
-
----
-# Latent Class Growth Curves
-
-&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/nagin_land_quote.png" width="80%" style="display: block; margin: auto;" /&gt;
-
-_Nagin and Land (1993:346) Age, Criminal Careers, and Population Heterogeneity: Specification and Estimation of a Nonparametric, Mixed Poisson Model, Criminology, Vol. 31, No. 3, pp. 327:362_
-
----
-# Latent Class Growth Curves
-
-- Latent Class Growth Curves (LCGM, Nagin and Land 1993, also known as Semi-Parametric Group-Based Modelling or Group-Based Trajectory Modelling... or as a specific case of Latent Class Mixed Models with no random effect... or as a specific case of Growth Mixture Models with no within-class variance), __makes groups out of data__ based on a repeated measures dependent variable
-- Each group gets a trajectory (in our case, probability of conviction in a given year)
-- LCGMs are very popular (if divisive) in criminology (Nagin and Land 2005a, 2005b; Sampson and Laub 2005)
-- Can give you a categorical output (trajectory membership) that you can then analyse as outcome in a regression model
 
 
 ---
