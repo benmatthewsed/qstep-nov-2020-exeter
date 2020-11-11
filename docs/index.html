@@ -279,11 +279,11 @@ vals2 &lt;-  seq(-1, by = 1, length.out = 5)
 df &lt;- 
 tibble(
   n_risk_factors = list(c("0", "1", "2", "3", "4")),
-  logit_x = list(vals, vals2),
+  logit_scale = list(vals, vals2),
   condition = list("low baseline", "high baseline")
   ) %&gt;% 
   unnest() %&gt;% 
-  mutate(prob_y = boot::inv.logit(logit_x))
+  mutate(prob_scale = boot::inv.logit(logit_scale))
 ```
 
 
@@ -319,7 +319,7 @@ class: center, middle, inverse
 
 # Research background
 1. How do __childhood experiences__ affect __adult convictions__ histories?
-2. Adult convictions patterns are __hetergeneous__, and so we often summaries them as a set of __discrete trajectories__ with different shapes
+2. Adult convictions patterns are __heterogeneous__, and so we often summaries them as a set of __discrete trajectories__ with different shapes
 2. Key insight one: childhood experiences affect adult convictions __cumulatively__. Our focus is on 'Crossover children' [(Baidawi, 2020:280)](https://www.tandfonline.com/doi/full/10.1080/0312407X.2019.1686765) who are involved with both youth justice __and__ child projection
 3. Key insight two: the ways in which childhood experiences shape adult outcomes may __vary by both sex and race/ethnicity__ [(Broidy et al. 2015:145)](https://link.springer.com/article/10.1007/s40865-015-0008-z)
 
@@ -434,7 +434,7 @@ Three steps:
 ---
 # Latent Class Growth Curves
 
-&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep_exeter/master/figures/nagin_land_quote.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/qstep_exeter/main/figures/nagin_land_quote.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 _Nagin and Land (1993:346) Age, Criminal Careers, and Population Heterogeneity: Specification and Estimation of a Nonparametric, Mixed Poisson Model, Criminology, Vol. 31, No. 3, pp. 327:362_
 
@@ -452,6 +452,7 @@ name: results
 class: center, middle, inverse
 
 # Results
+
 ---
 
 # Estimated conviction trajectories
@@ -459,11 +460,21 @@ class: center, middle, inverse
 
 
 ---
-
 # Conviction trajectory probabilities
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/main/docs/figures/20201109-step_preds_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
 
-&lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/main/docs/figures/esc_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
-https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/base_plot.png
+
+---
+# Interactions parameters
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/main/docs/figures/20201110-interaction_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+# Difference in estimated trajectories
+&lt;img src="https://raw.githubusercontent.com/benmatthewsed/esc-2020/main/docs/figures/20201110-difference_plot.png" width="78%" style="display: block; margin: auto;" /&gt;
+
+
 
 ---
 
