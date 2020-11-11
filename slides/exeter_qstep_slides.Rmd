@@ -107,14 +107,14 @@ class: center, middle, inverse
 ---
 class: center, middle, inverse, my-one-page-font
 
-# Intersectionality, interactions
+# Intersectionality and interactions
 
 ---
 
 # Problems with interactions
 - In the MAIHDA approach we want to fit interactions between __all__ our independent variables
 - Why do we need a fancy multilevel model for this?
-- Lots of interactions leads to __multiple testing__ and so we'd [get some statistically significant results by chance](https://psycnet.apa.org/fulltext/2019-30571-005.html)
+- Lots of interactions means lots of significance tests, and so problems with __multiple testing__ - we'd [get some statistically significant results by chance](https://psycnet.apa.org/fulltext/2019-30571-005.html)
 - Also, adding too many interaction effects in a standard regression model creates problems because of the __'curse of dimensionality'__
 - Every extra (categorical) variable in the interaction splits the sample up further and further, making estimates unreliable as interactions for many combinations of variables are based on increasingly small amounts of data
 
@@ -158,12 +158,12 @@ tibble(
   child_welfare = sample(c("CW contact", "no CW contact"),
               size = n,
               replace = TRUE,
-              prob = c(0.15, 0.80)),
+              prob = c(0.5, 0.80)),
   youth_justice = sample(c("YJ contact", "no YJ contact"),
               size = n,
               replace = TRUE,
-              prob = c(0.15, 0.80)),
-  convicted = sample(c(1, 0),
+              prob = c(0.10, 0.80)),
+  convicted = sample(c("1", "0"),
                size = n,
                replace = TRUE,
                prob = c(0.2, 0.8)),
@@ -174,64 +174,23 @@ tibble(
 ---
 # Curse of dimensionality
 
-.left-column[
-```{r some_data, fig.show = 'hide', results='hide'}
-df %>% 
-  count(
-    gender, 
-    Indigenous_status, 
-    convicted) %>% 
-  arrange(n)
+```{r some_data_plot, out.width = '78%', echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/base_plot.png")
 ```
-]
-
-.right-column[
-```{r ref.label='some_data', echo = FALSE}
-```
-]
-
 
 
 ---
 # Curse of dimensionality
 
-.left-column[
-```{r some_data2, fig.show = 'hide', results='hide'}
-df %>% 
-  count(
-    gender, 
-    Indigenous_status, 
-    child_welfare,
-    convicted) %>% 
-  arrange(n)
+```{r yj_plot, out.width = '78%', echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/yj_plot.png")
 ```
-]
-
-.right-column[
-```{r ref.label='some_data2', echo = FALSE}
-```
-]
-
 ---
 # Curse of dimensionality
 
-.left-column[
-```{r some_data3, fig.show = 'hide', results='hide'}
-df %>% 
-  count(
-    gender, 
-    Indigenous_status, 
-    child_welfare,
-    youth_justice,
-    convicted) %>% 
-  arrange(n)
+```{r both_plot, out.width = '78%', echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/both_plot.png")
 ```
-]
-
-.right-column[
-```{r ref.label='some_data3', echo = FALSE}
-```
-]
 
 ---
 
@@ -244,8 +203,8 @@ df %>%
 
 
 ---
-# Why a "multilevel" approach? Shrinkage
-- __Multilevel models__ are one way to let us be a bit __sceptical__ of extreme large effects for parameters when there isn't a lot of data
+# Scepticism through shrinkage
+- __Multilevel models__ are one way to let us be a bit __sceptical__ of extremely large effects for parameters when there isn't a lot of data
 - They do this by __'pooling' information__/'borrowing strength'/'shrinking' estimates across clusters
 - Often these clusters are schools or hospitals or courts, in this case our clusters are combinations of independent variables (i.e. our interactions)
 - This is because in the multilevel model assumes that clusters are __drawn from a Normal distribution__, making it sceptical of extreme values
@@ -288,11 +247,17 @@ knitr::include_graphics("https://m-clark.github.io/img/shrinkage/unbalanced.gif"
 - This is me speculating, but in general people in the social sciences who are doing this kind of work are pretty familiar with multilevel models (at least, more so than some of the other approaches?), and you can fit them with reasonably standard software which makes it more approachable
   
 ---
+class: center, middle, inverse
+
+# _Technical interlude_
+
+  
+---
 # Technical interlude
-- Okay we're really getting technical here but I __think__ there's also a difference here in how you'd understand what a multilevel model _is_ between Frequentist and Bayesian senses - the TLDR is that a Frequentist approach treats the 'levels' in a multilevel model as part of the model's error term (and so ["integrates them out of the likelihood"](https://discourse.mc-stan.org/t/hierarchical-linear-models-bayes-vs-frequentist/12012/2)) - and the error term is by definition what you're _not_ modelling. 
-- Whereas for Bayes these extra levels are (hyper-?)parameters that you estimate directly
-- The upshot is that you only get uncertainty estimates for all your interaction terms in the multilevel specification with Bayes, and so this is the recommended approach
-- I fit these models in `R` using  the `{brms}` package. There's a very involved __worked example__ [here](https://gist.github.com/benmatthewsed/a8136944dc31fcc26d2f2e433edaab6d). Others who have adopted this approach have used MLWiN which you can call through Stata
+- Okay we're really getting technical here but I __think__ there's also a difference here in how you'd understand what a multilevel model _is_ between Frequentist and Bayesian senses - the TLDR is that a Frequentist approach treats the 'levels' in a multilevel model as part of the model's error term (and so ["integrates them out of the likelihood"](https://discourse.mc-stan.org/t/hierarchical-linear-models-bayes-vs-frequentist/12012/2)) - and the error term is by definition what you're __not__ modelling. 
+- Whereas for Bayes these extra levels are (hyper-)parameters that you estimate directly
+- The upshot is that I think you only get __uncertainty estimates__ for all your interaction terms in the multilevel specification with __Bayes__, and so this is the recommended approach
+- I fit these models in `R` using  the `{brms}` package. There's a very involved __worked example__ of the approach I took [here](https://gist.github.com/benmatthewsed/a8136944dc31fcc26d2f2e433edaab6d). Others who have adopted this approach have used MLWiN which you can call through Stata
 
 
 ---
@@ -304,10 +269,9 @@ class: center, middle, inverse
 
 ---
 # Variation in outcomes
-- What about the variation in the outcome?
+- What about the describing variation in the outcome?
 - We want to avoid the ["Tyranny of the averages"](https://www.sciencedirect.com/science/article/pii/S0277953617307566?via%3Dihub#sec5) - assuming that everyone with the same characteristics has the same relationship between a 'risk factor' and the outcome we're interested in
-- For non-linear models we have the general problem that any parameter estimate is "extraordinarily hard to interpret" because the effects of every variable are _already_ conditional on the values of other variables (McElreath)
-
+- For non-linear models we also have the general problem that any parameter estimate is "extraordinarily hard to interpret" in isolation because the effects of every variable are _already_ conditional on the values of other variables (McElreath)
 
 ---
 # Solution: prediction for inference
@@ -315,13 +279,63 @@ class: center, middle, inverse
 - Decide what combinations of independent variables we're interested in (i.e., pick our representative values), use the model to estimate outcomes for people with that combination of independent variables (see also King et al. 2000)
 - These predictions incorporate the effects of all our interactions - that is, the levels of our 'multilevel' model - as well as the main effects of these variables
 - For categorical models we get a distribution of outcomes across the categories of our outcome - just what we want!
-- We can still look at parameter estimates for specific interactions
-- NB MERs are __conditional__ effects: they __don't tell us how common__ these combinations of independent variables are
+- We can still look at parameter estimates to see if specific interactions are important, but...
+
+---
+# Problem: interactions
+- The our MERs are __collapsible__: the amount your probability changes from a change in the presence of an independent variable depends on your probability in the absence of the independent variable
+- So the using predictive MERs incorporates both the interactions from our intersectional random effect, but also [__mathematical__, not subject-matter-relevant, interactions](https://www.fharrell.com/post/marg/) as a consequence of converting parameter estimates from the log-odds to the probability scale
+- And so on the probability scale we could find __cumulative__ effects of having multiple independent variables because of these __mathematical__ interactions, even if there is no __additional__ effect of having both youth justice and child welfare contact
+
+---
+# Problem: interactions
+
+
+```{r logit-set-up, fig.show = 'hide'}
+library(tidyverse)
+
+# say we have four independent variables which each
+# increase the log-odds of the outcome by 1, but
+# our two groups have very different baseline log-odds (i.e. intercepts)
+
+vals <- seq(-4, by = 1, length.out = 5)
+vals2 <-  seq(-1, by = 1, length.out = 5)
+
+# turn the log-odds into probabilities
+
+df <- 
+tibble(
+  n_risk_factors = list(c("0", "1", "2", "3", "4")),
+  logit_scale = list(vals, vals2),
+  condition = list("low baseline", "high baseline")
+  ) %>% 
+  unnest() %>% 
+  mutate(prob_scale = boot::inv.logit(logit_scale))
+
+```
+
+
+---
+# Problem: interactions
+
+```{r logit_plot, out.width = '78%', echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/logit_plot.png")
+```
+
+
+---
+# Problem: interactions
+- To account for this cumulative effect of transforming our results into probabilities, we __compare__ the estimated probabilities from our intersectional model to a model which __has all the fixed effects but doesn't have our intersectional random effect__
+- This comparison gives us an estimate __additional__ difference in the effect of our intersectional random effect compared to a simpler model without the random effects
+- (A question for you: does this even make sense!?)
+
+
 
 ---
 # In review
 - We want to fit a model with __lots of interactions__ and which helps us understand __variation in our outcome__ between people with the same observables
 - We can do this by fitting our interactions as a level in a __multilevel model__ and by interpreting the model through __Marginal Effects at Representative values__ to get a distribution of outcomes for people with a given set of characteristics
+
 
 
 ---
@@ -335,12 +349,14 @@ class: center, middle, inverse
 
 # Research background
 1. How do __childhood experiences__ affect __adult convictions__ histories?
+2. Adult convictions patterns are __heterogeneous__, and so we often summaries them as a set of __discrete trajectories__ with different shapes
 2. Key insight one: childhood experiences affect adult convictions __cumulatively__. Our focus is on 'Crossover children' [(Baidawi, 2020:280)](https://www.tandfonline.com/doi/full/10.1080/0312407X.2019.1686765) who are involved with both youth justice __and__ child projection
 3. Key insight two: the ways in which childhood experiences shape adult outcomes may __vary by both sex and race/ethnicity__ [(Broidy et al. 2015:145)](https://link.springer.com/article/10.1007/s40865-015-0008-z)
 
 ---
 # Research question
 - How do the __cumulative__ effects of youth justice and child welfare contact on adult convictions trajectories __vary by sex and race/ethnicity__?
+- Is there are a specific __additional association__ with adult convictions trajectory of having contact with youth justice __and__ child welfare?
 
 ---
 # Data
@@ -363,15 +379,14 @@ tibble::tribble(
               ~Variable,            ~Level,  ~Count, ~Proportion,
       "Adult conviction",      "Convicted",  16802, 20.2,
                       "",  "Not convicted",  66569, 79.8,
-     "Indigenous Status (IS) ","Indigenous (ever)",   4821, 0.06,
-                      "", "Non-Indigenous",  78541, 0.94,
-                   "Sex",         "Female",  40416, 0.48,
-                      "",           "Male",  42946, 0.52,
-      "Police Diversion",              "1",   9264, 0.11,
-         "Abuse/Neglect",              "1",   3515, 0.04,
-  "Youth Justice Charge",              "1",   3306, 0.04,
-        "OOHC Placement",              "1",    784, 0.01,
-       "Youth Detention",              "1",    469, 0.01,
+  "Sex",         "Female", 40416L,  0.48, 
+  "",           "Male", 42946L,  0.52, 
+  "Indigenous Status",     "Indigenous",  4821L,  0.06,  
+  "", "Non-indigenous", 78541L,  0.94, 
+  "Child Welfare/Youth Justice",            "0.0", 71232L,  0.85, 
+  "",            "1.0",  2048L,  0.02,  
+  "",            "0.1",  8528L,   0.1,   
+  "",            "1.1",  1554L,  0.02, 
                  "Total",               "",  83371,    1
   ) %>% kableExtra::kable("html")
 ```
@@ -388,8 +403,8 @@ Three steps:
 ---
 # Latent Class Growth Curves
 
-```{r nagin_land, out.width = '60%', echo = FALSE, fig.align="center"}
-knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep_exeter/master/figures/nagin_land_quote.png")
+```{r nagin_land, out.width = '80%', echo = FALSE, fig.align="center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/nagin_land_quote.png")
 ```
 
 _Nagin and Land (1993:346) Age, Criminal Careers, and Population Heterogeneity: Specification and Estimation of a Nonparametric, Mixed Poisson Model, Criminology, Vol. 31, No. 3, pp. 327:362_
@@ -408,6 +423,7 @@ name: results
 class: center, middle, inverse
 
 # Results
+
 ---
 
 # Estimated conviction trajectories
@@ -415,17 +431,61 @@ class: center, middle, inverse
 knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/y18_trajectories.png")
 ```
 
----
-
-
 
 ---
+# Regression model fit
 
-# Conviction trajectory probabilities
+```{r model_fit, echo = FALSE}
+model <- 
+data.frame(
+  stringsAsFactors = FALSE,
+                  model_names = c("Intersectional","Intersectional (extra interaction)",
+                                  "Fixed effects (interaction)",
+                                  "Fixed effectes","Sex and IS only","Intercept only"),
+               model_formulas = c("category ~ sex * IS + any_cw + any_yj + (1 | stratum)",
+                                  "category ~ sex * IS + any_cw * any_yj + (1 | stratum)",
+                                  "category ~ sex * IS + any_cw * any_yj",
+                                  "category ~ sex * IS + any_cw + any_yj","category ~ sex * IS","category ~ 1"),
+                    elpd_diff = c("0.0",
+                                  "-1.5","-56.6","-58.1","-3211.2","-7706.0"),
+           se_diff = c("0.0", "1.2", "11.1", "11.4", "88.9", "130.0")
+           )
 
-```{r mers_comp, out.width = '78%', echo = FALSE, fig.align = "center"}
-knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/esc_plot.png")
+knitr::kable(model)
+
+
 ```
+
+
+---
+# Parameter estimates: fixed effects
+```{r betas, echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/figures/20201109-full_model_fixed_params.png")
+```
+
+
+---
+# Interactions parameters
+```{r interaction_plot, out.width = '78%', echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/docs/figures/20201110-interaction_plot.png")
+```
+
+
+
+
+---
+# Conviction trajectory probabilities
+```{r mers_comp, out.width = '78%', echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/docs/figures/20201109-step_preds_plot.png")
+```
+
+
+---
+# Difference in estimated trajectories
+```{r difference_plot, out.width = '78%', echo = FALSE, fig.align = "center"}
+knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/qstep-nov-2020-exeter/main/docs/figures/20201110-difference_plot.png")
+```
+
 
 
 ---
@@ -438,10 +498,26 @@ knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/esc-202
 - … but the __cumulative effect__ of these risk factors leads to __similar outcomes by sex`*`IS__, despite the very __different baselines__ by sex and IS
 
 ---
+# Discussion
+-	There was an additional cross-over effect for non-IS women in the low-level Early trajectory, but not much for other trajectories or groups
+-	Possible explanations: N-IS women in contact with both systems have (on average) worse circumstances for things we don’t measure? Particularly strong effect of labelling by both systems for Non-IS women? Mathematically, we see these bigger effects for Non-IS women because their intercept in the model (when they have no contact with any system) is very, very low, in the part of the distribution where converting log-odds to probabilities has an outsized effect?
+- We see a lot of variation in estimated trajectories for people with the same observable characteristics. This reflects both things we haven’t included in the model, but also people’s differential responses to these childhood experiences (including possibly resilience for some people mitigating the effects of these experiences)
+
+---
 # Concluding thoughts
-- This is a first step: from this model we can derive __other quantities of interest__
+
+- This particular way of quantitatively modelling 'intersectionality' seems pretty good!
+- I like that it's exploratory - but you have to bear in mind that no 'significant' effect doesn't mean that no effect - it may just be that estimates were very aggressively shrunk towards zero
+- "Absence of evidence is not evidence of absence"
+- In the multinomial case it's a bit of a pain though
+- Even though I've talked about it less today I think emphasising the variation in outcomes for people with the same observables has had a more profound impact on how I think about quantitative modelling (see also [this](http://nautil.us/issue/92/frontiers/how-eugenics-shaped-statistics))
+- If you take anything from this talk please go and read McCall (2005)
+
+---
+# Concluding thoughts
 - What does IS measure here? Must __avoid deficit interpretation__ [(Walter and Andersen 2013)](https://www.taylorfrancis.com/books/e/9781315426570)
-- Of the two aspects of quantitative intersectionality, I think taking the variation in the outcome seriously has made more of an impression on me
+- Same with sex/gender!
+- I wonder if this project has too many moving parts - does this make sense?
 
 
 
@@ -483,9 +559,3 @@ class: center, middle, inverse
 
 # Bonus slides
 
-
----
-# Prevalence of independent variables by sex and IS
-```{r proportions, out.width = '50%', echo = FALSE, fig.align = "center"}
-knitr::include_graphics("https://raw.githubusercontent.com/benmatthewsed/esc-2020/master/docs/figures/iv_proportions.png")
-```
