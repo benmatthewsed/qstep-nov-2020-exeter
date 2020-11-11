@@ -1,16 +1,16 @@
 library(tidyverse)
 
-vals <- c(-4, -3, -2, -1, 0)
-vals2 <- seq(-1, 3, 1)
+vals <- seq(-4, by = 1, length.out = 5)
+vals2 <-  seq(-1, by = 1, length.out = 5)
 
 df <- 
 tibble(
   n_risk_factors = list(c("0", "1", "2", "3", "4")),
-  logit_x = list(vals, vals2),
+  logit_scale = list(vals, vals2),
   condition = list("low baseline", "high baseline")
   ) %>% 
   unnest() %>% 
-  mutate(prob_y = boot::inv.logit(logit_x))
+  mutate(prob_scale = boot::inv.logit(logit_x))
 
 logit_plot <- 
 df %>% 
